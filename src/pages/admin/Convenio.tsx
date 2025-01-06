@@ -72,7 +72,7 @@ const Convenio: React.FC = () => {
         onClick={() => setMostrarFormulario((prev) => !prev)} // Alterna a visibilidade do formulário
         className={styles.novoConvenioButton}
       >
-        Novo Convênio
+        Adicionar Convênio
       </button>
       
       {mostrarFormulario && (

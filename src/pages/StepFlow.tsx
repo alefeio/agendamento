@@ -38,7 +38,7 @@ const StepFlow: React.FC = () => {
                     <p><strong>Especialidade:</strong> {agendamentoData.especialidade.nome || 'Não selecionado'}</p>
                     <p><strong>Convênio:</strong> {agendamentoData.convenio?.nome || 'Não selecionado'}</p>
                     <p><strong>Médico:</strong> {agendamentoData.medico?.nome || 'Não selecionado'}</p>
-                    <p><strong>Data de Agendamento:</strong> {agendamentoData.dataAgendamento || 'Não selecionada'}</p>
+                    <p><strong>Data de Agendamento:</strong> Dia {agendamentoData.dataAgendamento.data && agendamentoData.dataAgendamento.data.split('-').reverse().join('/') || 'Não selecionado'} | Hora {agendamentoData.dataAgendamento.horario || 'Não selecionado'}</p>
                 </div>
             </aside>
 

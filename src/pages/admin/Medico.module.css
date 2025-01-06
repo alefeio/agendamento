@@ -18,20 +18,25 @@
   
   .responsiveTable th,
   .responsiveTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    padding: 12px 15px;
     text-align: left;
+    border: 1px solid #ddd;
+  }
+
+  .responsiveTable td small {
+    color: #555;
   }
   
   .responsiveTable th {
     background-color: #f4f4f4;
+    color: #333;
   }
   
-  .responsiveTable tbody tr:nth-child(even) {
+  .responsiveTable tr:nth-child(even) {
     background-color: #f9f9f9;
   }
   
-  .responsiveTable tbody tr:hover {
+  .responsiveTable tr:hover {
     background-color: #f1f1f1;
   }
   
@@ -70,7 +75,7 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-bottom: 20px;
+    margin-top: 20px;
   }
   
   .novoMedicoButton:hover {
@@ -145,9 +150,18 @@
   .excluirBtn:hover {
     background-color: #c0392b;
   }
+
+  .tabelaWrapper {
+    margin-top: 20px;
+    overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
+    width: 100%;
+    overflow-y: hidden;
+  }
   
+    
+  /* Estilos responsivos */
   @media (max-width: 600px) {
-    .responsiveTable th, .responsiveTable td {
+    .responsiveTable th, .tabela td {
       font-size: 14px;
       padding: 10px;
     }

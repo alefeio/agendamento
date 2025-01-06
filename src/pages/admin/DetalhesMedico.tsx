@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, collection, getDocs, deleteDoc, setDoc } from 'firebase/firestore';
- 
+
 import { db } from '../../../firebaseConfig';
 import styles from './DetalhesMedico.module.css';
 import { Disponibilidade } from '../../components/Disponibilidade';
@@ -216,61 +216,63 @@ const DetalhesMedico: React.FC = () => {
                             </div>
                         )}
                         {relacoes.length > 0 && (
-                            <table className={styles.responsiveTable}>
-                                <thead>
-                                    <tr>
-                                        <th>Convênio</th>
-                                        <th>Limite Mensal</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {relacoes.map((rel) => (
-                                        <tr key={rel.id}>
-                                            <td>{rel.nomeConvenio}</td>
-                                            <td>
-                                                {editandoLimite === rel.convenioId ? (
-                                                    <input
-                                                        type="number"
-                                                        value={limiteEditado ?? rel.limiteMensal}
-                                                        onChange={(e) =>
-                                                            setLimiteEditado(Number(e.target.value))
-                                                        }
-                                                    />
-                                                ) : (
-                                                    rel.limiteMensal
-                                                )}
-                                            </td>
-                                            <td>
-                                                {editandoLimite === rel.convenioId ? (
-                                                    <button
-                                                        onClick={() =>
-                                                            handleEditarLimite(rel.convenioId, limiteEditado ?? rel.limiteMensal)
-                                                        }
-                                                    >
-                                                        Salvar
-                                                    </button>
-                                                ) : (
-                                                    <button
-                                                        onClick={() => {
-                                                            setEditandoLimite(rel.convenioId);
-                                                            setLimiteEditado(rel.limiteMensal);
-                                                        }}
-                                                    >
-                                                        Editar
-                                                    </button>
-                                                )}
-                                                <button
-                                                    className={styles.deleteButton}
-                                                    onClick={() => handleExcluirRelacao(rel.convenioId)}
-                                                >
-                                                    Excluir
-                                                </button>
-                                            </td>
+                            <div className={styles.tabelaWrapper}>
+                                <table className={styles.responsiveTable}>
+                                    <thead>
+                                        <tr>
+                                            <th>Convênio</th>
+                                            <th>Limite Mensal</th>
+                                            <th>Ações</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {relacoes.map((rel) => (
+                                            <tr key={rel.id}>
+                                                <td>{rel.nomeConvenio}</td>
+                                                <td>
+                                                    {editandoLimite === rel.convenioId ? (
+                                                        <input
+                                                            type="number"
+                                                            value={limiteEditado ?? rel.limiteMensal}
+                                                            onChange={(e) =>
+                                                                setLimiteEditado(Number(e.target.value))
+                                                            }
+                                                        />
+                                                    ) : (
+                                                        rel.limiteMensal
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    {editandoLimite === rel.convenioId ? (
+                                                        <button
+                                                            onClick={() =>
+                                                                handleEditarLimite(rel.convenioId, limiteEditado ?? rel.limiteMensal)
+                                                            }
+                                                        >
+                                                            Salvar
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => {
+                                                                setEditandoLimite(rel.convenioId);
+                                                                setLimiteEditado(rel.limiteMensal);
+                                                            }}
+                                                        >
+                                                            Editar
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        className={styles.deleteButton}
+                                                        onClick={() => handleExcluirRelacao(rel.convenioId)}
+                                                    >
+                                                        Excluir
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         )}
                     </div>
                 </div>

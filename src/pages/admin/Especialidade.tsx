@@ -73,7 +73,7 @@ const Especialidade: React.FC = () => {
         onClick={() => setMostrarFormulario((prev) => !prev)}
         className={styles.novaEspecialidadeButton}
       >
-        Nova Especialidade
+        Adicionar Especialidade
       </button>
       
       {mostrarFormulario && (

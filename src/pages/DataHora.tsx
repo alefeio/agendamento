@@ -33,7 +33,8 @@ const DataHora: React.FC = () => {
     const [dataSelecionada, setDataSelecionada] = useState<Date>(new Date());
     const [horarioSelecionado, setHorarioSelecionado] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
-    const { agendamentoData } = useAgendamento();
+
+    const { agendamentoData, setAgendamentoData } = useAgendamento();
     const navigate = useNavigate();
 
     const feriados = ['2025-01-01', '2025-02-20', '2025-04-21', '2025-05-01'];
@@ -92,6 +93,28 @@ const DataHora: React.FC = () => {
     }, [agendamentoData.medico?.id]);
 
     const formatarData = (data: Date) => data.toISOString().split('T')[0];
+
+    const selecionarData = (data: Date) => {
+        setDataSelecionada(data);
+        setAgendamentoData((prev) => ({
+            ...prev,
+            dataAgendamento: {
+                ...prev.dataAgendamento,
+                data: formatarData(data), // Atualiza apenas a data
+            },
+        }));
+    };
+
+    const selecionarHorario = (horario: string) => {
+        setHorarioSelecionado(horario);
+        setAgendamentoData((prev) => ({
+            ...prev,
+            dataAgendamento: {
+                ...prev.dataAgendamento,
+                horario, // Atualiza apenas o horário
+            },
+        }));
+    };
 
     const isDiaIndisponivel = (date: Date) => {
         const dataFormatada = formatarData(date);
@@ -155,43 +178,71 @@ const DataHora: React.FC = () => {
     const verificarDisponibilidadeRotativa = (data: Date) => {
         const dataFormatada = formatarData(data);
         const horariosDisponiveis = disponibilidadeRotativa?.horariosPorData[dataFormatada] || [];
-
-        // Remove horários já agendados
+    
+        // Remove horários já agendados ou que faltam menos de 30 minutos
         const horariosFuturos = horariosDisponiveis.filter((horario) => {
-            const [hora, minuto] = horario.split(':');
+            const [hora, minuto] = horario.split(':').map(Number);
             const horarioDate = new Date(data);
-            horarioDate.setHours(parseInt(hora), parseInt(minuto));
-
-            // Verifica se o horário não está agendado
+            horarioDate.setHours(hora, minuto, 0, 0);
+    
+            const agora = new Date();
+            const meiaHoraAntes = new Date(agora.getTime() + 30 * 60 * 1000);
+    
             const horarioIndisponivel = horariosIndisponiveis.some(
                 (agendamento) => agendamento.dia === dataFormatada && agendamento.horario === horario
             );
-            return horarioDate > new Date() && !horarioIndisponivel;
+    
+            return horarioDate > meiaHoraAntes && !horarioIndisponivel;
         });
-
+    
+        // Ordena os horários em ordem crescente
+        horariosFuturos.sort((a, b) => {
+            const [horaA, minutoA] = a.split(':').map(Number);
+            const [horaB, minutoB] = b.split(':').map(Number);
+    
+            return horaA * 60 + minutoA - (horaB * 60 + minutoB);
+        });
+    
         return horariosFuturos;
     };
-
+    
+    
     const obterHorariosFixa = (data: Date) => {
         const diaSemana = getDiaSemana(data);
         const horariosDisponiveis = disponibilidadeFixa?.diasDaSemanaComHorarios[diaSemana] || [];
-
-        // Remove horários já agendados
-        const horariosDisponiveisFixa = horariosDisponiveis.filter((horario) => {
-            return !horariosIndisponiveis.some(
+    
+        // Remove horários já agendados ou que faltam menos de 30 minutos
+        const horariosFuturos = horariosDisponiveis.filter((horario) => {
+            const [hora, minuto] = horario.split(':').map(Number);
+            const horarioDate = new Date(data);
+            horarioDate.setHours(hora, minuto, 0, 0);
+    
+            const agora = new Date();
+            const meiaHoraAntes = new Date(agora.getTime() + 30 * 60 * 1000);
+    
+            const horarioIndisponivel = horariosIndisponiveis.some(
                 (agendamento) => agendamento.dia === formatarData(data) && agendamento.horario === horario
             );
+    
+            return horarioDate > meiaHoraAntes && !horarioIndisponivel;
         });
-
-        return horariosDisponiveisFixa;
+    
+        // Ordena os horários em ordem crescente
+        horariosFuturos.sort((a, b) => {
+            const [horaA, minutoA] = a.split(':').map(Number);
+            const [horaB, minutoB] = b.split(':').map(Number);
+    
+            return horaA * 60 + minutoA - (horaB * 60 + minutoB);
+        });
+    
+        return horariosFuturos;
     };
+    
 
     const getDiaSemana = (date: Date) => {
         const diasDaSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
         return diasDaSemana[date.getDay()];
     };
-
-    const selecionarHorario = (horario: string) => setHorarioSelecionado(horario);
 
     const salvarAgendamento = async () => {
         if (!horarioSelecionado) {
@@ -254,7 +305,10 @@ const DataHora: React.FC = () => {
 
             <div className={styles.calendarWrapper}>
                 <Calendar
-                    onClickDay={setDataSelecionada}
+                    onClickDay={(date: Date) => {
+                        setDataSelecionada(date);
+                        selecionarData(date);
+                    }}
                     value={dataSelecionada}
                     tileDisabled={({ date }) => isDiaIndisponivel(date)}
                     tileClassName={({ date }) => {
@@ -277,7 +331,7 @@ const DataHora: React.FC = () => {
                 />
             </div>
 
-            <h3>Horários Disponíveis para {formatarData(dataSelecionada)}</h3>
+            <h3>Horários Disponíveis para {formatarData(dataSelecionada).split('-').reverse().join('/')}</h3>
             <div className={styles.buttonsWrapper}>
                 {/* Exibir horários para agenda rotativa */}
                 {horariosRotativa.length > 0 ? (

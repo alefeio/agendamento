@@ -18,8 +18,10 @@ h3, h4 {
 }
 
 .tabelaWrapper {
-    margin-top: 20px;
-    margin-bottom: 20px;
+  margin-top: 20px;
+  overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
+  width: 100%;
+  overflow-y: hidden;
 }
 
 .responsiveTable {

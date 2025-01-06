@@ -22,7 +22,10 @@ interface AgendamentoData {
     id: string;
     nome: string;
   } | null;
-  dataAgendamento: string;
+  dataAgendamento: {
+    data: string;
+    horario: string;
+  }
 }
 
 // Criando o contexto com um valor inicial vazio
