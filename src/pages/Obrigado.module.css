@@ -13,7 +13,8 @@
 
 .logo {
     height: auto;
-    max-width: 100%; /* Garante que a logo não ultrapasse a largura disponível */
+    max-width: 100%;
+    /* Garante que a logo não ultrapasse a largura disponível */
 }
 
 /* Conteúdo Principal */
@@ -24,7 +25,8 @@
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     width: 100%;
-    max-width: 500px; /* Limita a largura em telas grandes */
+    max-width: 500px;
+    /* Limita a largura em telas grandes */
 }
 
 .title {
@@ -78,38 +80,53 @@
 /* Estilos responsivos */
 @media (max-width: 768px) {
     .contentWrapper {
-        padding: 30px; /* Menos padding para telas menores */
+        text-align: center;
+        background-color: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 500px; /* Limita a largura em telas grandes */
     }
 
     .title {
-        font-size: 1.3rem; /* Fonte um pouco menor */
+        font-size: 1.3rem;
+        /* Fonte um pouco menor */
     }
 
     .subtitle {
-        font-size: 1rem; /* Fonte um pouco menor */
+        font-size: 1rem;
+        /* Fonte um pouco menor */
     }
 
     .button {
-        font-size: 1rem; /* Botão com fonte menor */
-        padding: 12px 25px; /* Menos padding */
+        font-size: 1rem;
+        /* Botão com fonte menor */
+        padding: 12px 25px;
+        /* Menos padding */
     }
 }
 
 @media (max-width: 480px) {
     .title {
-        font-size: 1.1rem; /* Fonte ainda menor para telas pequenas */
+        font-size: 1.1rem;
+        /* Fonte ainda menor para telas pequenas */
     }
 
     .subtitle {
-        font-size: 0.9rem; /* Fonte reduzida para mais legibilidade */
+        font-size: 0.9rem;
+        /* Fonte reduzida para mais legibilidade */
     }
 
     .button {
-        font-size: 0.9rem; /* Fonte menor */
-        padding: 10px 20px; /* Ajuste no padding para caber melhor */
+        font-size: 0.9rem;
+        /* Fonte menor */
+        padding: 10px 20px;
+        /* Ajuste no padding para caber melhor */
     }
 
     .footer {
-        font-size: 0.8rem; /* Fonte menor no rodapé */
+        font-size: 0.8rem;
+        /* Fonte menor no rodapé */
     }
 }
