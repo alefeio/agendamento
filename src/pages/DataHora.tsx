@@ -97,61 +97,61 @@ const DataHora: React.FC = () => {
     const dataFormatada = formatarData(date);
     const dataAtual = new Date();
     const diaSemana = getDiaSemana(date);
-  
+
     // Verifica se a data é anterior ao dia atual
     if (date < new Date(dataAtual.setHours(0, 0, 0, 0))) {
       return true;
     }
-  
+
     // Obtem horários disponíveis para o dia
     const horariosRotativa = verificarDisponibilidadeRotativa(date);
     const horariosFixa = obterHorariosFixa(date);
-  
+
     // Combina os horários das agendas rotativa e fixa
     const todosHorariosDisponiveis = [...horariosRotativa, ...horariosFixa];
-  
+
     if (todosHorariosDisponiveis.length === 0) {
       return true; // Não há horários disponíveis no dia
     }
-  
+
     // Ordena os horários disponíveis para obter o último horário
     todosHorariosDisponiveis.sort((a, b) => {
       const [horaA, minutoA] = a.split(':').map(Number);
       const [horaB, minutoB] = b.split(':').map(Number);
       return horaA * 60 + minutoA - (horaB * 60 + minutoB);
     });
-  
+
     const ultimoHorarioDisponivel = todosHorariosDisponiveis[todosHorariosDisponiveis.length - 1];
-  
+
     // Se for o dia atual, verifica se o último horário disponível já passou
     if (formatarData(date) === formatarData(dataAtual)) {
       const [hora, minuto] = ultimoHorarioDisponivel.split(':').map(Number);
       const ultimoHorarioDate = new Date();
       ultimoHorarioDate.setHours(hora, minuto, 0, 0);
-  
+
       if (ultimoHorarioDate <= dataAtual) {
         return true; // Bloqueia o dia se o último horário já passou
       }
     }
-  
+
     // Verifica se o dia é feriado
     if (feriados.includes(dataFormatada)) {
       return true;
     }
-  
+
     // Verifica disponibilidade para agenda rotativa
     if (disponibilidadeRotativa && !disponibilidadeRotativa.diasCalendario.includes(dataFormatada)) {
       return true;
     }
-  
+
     // Verifica disponibilidade para agenda fixa
     if (disponibilidadeFixa && !disponibilidadeFixa.diasDaSemanaComHorarios[diaSemana]) {
       return true;
     }
-  
+
     return false; // O dia está disponível
   };
-  
+
   const verificarDisponibilidadeRotativa = (data: Date) => {
     const dataFormatada = formatarData(data);
     const horariosDisponiveis = disponibilidadeRotativa?.horariosPorData[dataFormatada] || [];
@@ -255,7 +255,7 @@ const DataHora: React.FC = () => {
 
         <div className={styles.calendarWrapper}>
           <Calendar
-            onChange={setDataSelecionada}
+            onClickDay={setDataSelecionada}
             value={dataSelecionada}
             tileDisabled={({ date }) => isDiaIndisponivel(date)}
             tileClassName={({ date }) => {
