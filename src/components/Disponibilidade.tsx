@@ -14,7 +14,7 @@ interface Disponibilidad {
     diasDaSemanaComHorarios?: { [key: string]: string[] };
 }
 
-export const Disponibilidade = ({ id }: any) => {
+export const Disponibilidade = ({ id }: { id: string }) => {
     const [tipoAgenda, setTipoAgenda] = useState<'fixa' | 'rotativa' | ''>('');
     const [diasSemana, setDiasSemana] = useState<boolean[]>(new Array(7).fill(false));
     const [horarios, setHorarios] = useState<string[]>([]);
@@ -271,6 +271,7 @@ export const Disponibilidade = ({ id }: any) => {
         setDiasCalendario(diasCalendario.filter((d) => d !== data));
         setHorariosPorData((prev) => {
             const { [data]: _, ...rest } = prev;
+            console.log(_);
             return rest;
         });
     };

@@ -44,6 +44,7 @@ const Especialidade: React.FC = () => {
         setEspecialidades(especialidadesComMedicos);
         setIsLoading(false);
       } catch (err) {
+        console.error(err);
         setError('Erro ao carregar especialidades. Tente novamente.');
         setIsLoading(false);
       }

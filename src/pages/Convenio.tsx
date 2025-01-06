@@ -28,6 +28,7 @@ const Convenio: React.FC = () => {
         setConvenios(listaConvenios);
         setIsLoading(false);
       } catch (err) {
+        console.error(err);
         setError('Erro ao carregar convênios. Tente novamente.');
         setIsLoading(false);
       }

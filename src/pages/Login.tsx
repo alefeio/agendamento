@@ -19,6 +19,7 @@ const Login: React.FC = () => {
       await signInWithEmailAndPassword(auth, email, password);
       navigate('/restrito'); // Redireciona para a área restrita
     } catch (error) {
+      console.error(error);
       setError('Erro ao realizar login. Verifique suas credenciais.');
     }
   };

@@ -82,6 +82,7 @@ const Agendamentos: React.FC = () => {
         setAgendamentos(listaAgendamentos);
         setLoading(false);
       } catch (err) {
+        console.error(err);
         setError('Erro ao carregar agendamentos. Tente novamente mais tarde.');
         setLoading(false);
       }
@@ -99,6 +100,7 @@ const Agendamentos: React.FC = () => {
       await deleteDoc(agendamentoDocRef);
       setAgendamentos((prev) => prev.filter((agendamento) => agendamento.id !== id));
     } catch (err) {
+      console.error(err);
       alert('Erro ao excluir agendamento. Tente novamente.');
     }
   };
