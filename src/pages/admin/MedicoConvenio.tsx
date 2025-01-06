@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, deleteDoc, doc, setDoc } from 'firebase/firestore';
-// @ts-ignore
+ 
 import { db } from '../../../firebaseConfig';
 
 interface Convenio {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { doc, collection, getDocs, deleteDoc, setDoc, addDoc } from 'firebase/firestore';
-// @ts-ignore
+ 
 import { db } from '../../firebaseConfig';
 import styles from './Disponibilidade.module.css';
 

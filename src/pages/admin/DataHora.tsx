@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
-// @ts-ignore
+ 
 import { db } from '../../../firebaseConfig';
 import styles from './Agendamentos.module.css'; // Importando o CSS
 

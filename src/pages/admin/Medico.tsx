@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-// @ts-ignore
+ 
 import { db } from '../../../firebaseConfig';
 import styles from './Medico.module.css';
 

@@ -1,4 +1,4 @@
-declare module '../../firebaseConfig' {
+declare module './firebaseConfig' {
     import { FirebaseApp } from 'firebase/app';
     import { Firestore } from 'firebase/firestore';
 
