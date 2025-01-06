@@ -19,6 +19,8 @@ const Home: React.FC = () => {
       </div>
       <footer className={styles.footer}>
         <p>&copy; 2025 Unigastro. Todos os direitos reservados.</p>
+        {/* Link discreto para a tela de login */}
+        <Link to="/login" className={styles.loginLink}>Login</Link>
       </footer>
     </div>
   );

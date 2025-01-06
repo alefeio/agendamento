@@ -120,3 +120,17 @@
         font-size: 0.8rem; /* Fonte menor no rodapé */
     }
 }
+
+/* Adicionando um estilo discreto para o link de login */
+.loginLink {
+    font-size: 0.9rem;  /* Tamanho de fonte menor */
+    color: #f4f6f9;       /* Cor suave */
+    text-decoration: none;  /* Sem sublinhado */
+    margin-top: 10px;   /* Espaço acima */
+    display: inline-block;
+  }
+  
+  .loginLink:hover {
+    color: #43a047;  /* Cor suave ao passar o mouse */
+  }
+  
