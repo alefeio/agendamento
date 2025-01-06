@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, getDocs, deleteDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
-
-interface Especialidade {
-  id: string;
-  nome: string;
-}
 
 interface Convenio {
   id: string;

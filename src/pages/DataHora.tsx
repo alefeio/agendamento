@@ -52,9 +52,9 @@ const DataHora: React.FC = () => {
         snapshot.docs.forEach((doc) => {
           const data = doc.data();
           if (data.tipo === 'rotativa') {
-            setDisponibilidadeRotativa(data);
+            setDisponibilidadeRotativa(data as DisponibilidadeRotativa);
           } else if (data.tipo === 'fixa') {
-            setDisponibilidadeFixa(data);
+            setDisponibilidadeFixa(data as DisponibilidadeFixa);
           }
         });
       } catch (error) {
@@ -254,7 +254,7 @@ const DataHora: React.FC = () => {
 
         <div className={styles.calendarWrapper}>
           <Calendar
-            onChange={setDataSelecionada}
+            onChange={() => setDataSelecionada(dataSelecionada)}
             value={dataSelecionada}
             tileDisabled={({ date }) => isDiaIndisponivel(date)}
             tileClassName={({ date }) => {

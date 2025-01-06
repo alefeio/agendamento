@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { doc, collection, getDocs, deleteDoc, setDoc, addDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import styles from './Disponibilidade.module.css';
@@ -11,9 +11,10 @@ interface Disponibilidad {
     horarios?: string[];
     diasCalendario?: string[];
     horariosPorData?: { [key: string]: string[] };
+    diasDaSemanaComHorarios?: { [key: string]: string[] };
 }
 
-export const Disponibilidade = ({ id }: string) => {
+export const Disponibilidade = ({ id }: any) => {
     const [tipoAgenda, setTipoAgenda] = useState<'fixa' | 'rotativa' | ''>('');
     const [diasSemana, setDiasSemana] = useState<boolean[]>(new Array(7).fill(false));
     const [horarios, setHorarios] = useState<string[]>([]);
@@ -37,7 +38,7 @@ export const Disponibilidade = ({ id }: string) => {
                     const sortedHorariosPorData = Object.keys(data.horariosPorData)
                         .sort((a, b) => new Date(a).getTime() - new Date(b).getTime()) // Ordena as datas
                         .reduce((acc, key) => {
-                            acc[key] = data.horariosPorData[key];
+                            acc[key] = data.horariosPorData![key];
                             return acc;
                         }, {} as Record<string, string[]>);
 
@@ -105,7 +106,7 @@ export const Disponibilidade = ({ id }: string) => {
                         .map((dia) => [dia, diasDaSemanaAtualizados[dia]])
                 );
 
-                await setDoc(doc(db, 'disponibilidade', disponibilidadeExistente.id), {
+                await setDoc(doc(db, 'disponibilidade', disponibilidadeExistente.id!), {
                     ...disponibilidadeExistente,
                     diasDaSemanaComHorarios: diasOrdenados,
                 });
@@ -120,15 +121,15 @@ export const Disponibilidade = ({ id }: string) => {
                 diasSemana.forEach((isSelected, index) => {
                     if (isSelected) {
                         const dia = ordemDias[index];
-                        disponib.diasDaSemanaComHorarios[dia] = horarios;
+                        disponib.diasDaSemanaComHorarios![dia] = horarios;
                     }
                 });
 
                 // Ordena os dias da semana para exibição correta
                 const diasOrdenados = Object.fromEntries(
                     ordemDias
-                        .filter((dia) => disponib.diasDaSemanaComHorarios[dia]) // Filtra os dias selecionados
-                        .map((dia) => [dia, disponib.diasDaSemanaComHorarios[dia]])
+                        .filter((dia) => disponib.diasDaSemanaComHorarios![dia]) // Filtra os dias selecionados
+                        .map((dia) => [dia, disponib.diasDaSemanaComHorarios![dia]])
                 );
 
                 const disponibilidadeRef = collection(db, 'disponibilidade');
@@ -151,7 +152,7 @@ export const Disponibilidade = ({ id }: string) => {
 
             if (disponibilidadeExistente) {
                 // Atualizar a disponibilidade rotativa existente
-                const diasCalendarioAtualizados = [...disponibilidadeExistente.diasCalendario, ...diasCalendario];
+                const diasCalendarioAtualizados = [...disponibilidadeExistente.diasCalendario!, ...diasCalendario];
                 const horariosAtualizados = { ...disponibilidadeExistente.horariosPorData };
 
                 // Adiciona os horários para as novas datas
@@ -165,7 +166,7 @@ export const Disponibilidade = ({ id }: string) => {
                 const diasCalendarioOrdenados = diasCalendarioAtualizados.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
                 // Atualiza a disponibilidade rotativa no banco de dados
-                await setDoc(doc(db, 'disponibilidade', disponibilidadeExistente.id), {
+                await setDoc(doc(db, 'disponibilidade', disponibilidadeExistente.id!), {
                     ...disponibilidadeExistente,
                     diasCalendario: diasCalendarioOrdenados,
                     horariosPorData: horariosAtualizados,
@@ -406,7 +407,7 @@ export const Disponibilidade = ({ id }: string) => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {Object.entries(disponibilidade.diasDaSemanaComHorarios)
+                                                {Object.entries(disponibilidade.diasDaSemanaComHorarios!)
                                                     .sort(([diaA], [diaB]) => {
                                                         const ordemDias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
                                                         return ordemDias.indexOf(diaA) - ordemDias.indexOf(diaB);
@@ -418,7 +419,7 @@ export const Disponibilidade = ({ id }: string) => {
                                                             <td>
                                                                 <button
                                                                     className={styles.deleteButton}
-                                                                    onClick={() => handleExcluirDia(disponibilidade.id, dia)}
+                                                                    onClick={() => handleExcluirDia(disponibilidade.id!, dia)}
                                                                 >
                                                                     Excluir Dia
                                                                 </button>
@@ -439,14 +440,14 @@ export const Disponibilidade = ({ id }: string) => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {Object.entries(disponibilidade.horariosPorData).map(([data, horarios]) => (
+                                                {Object.entries(disponibilidade.horariosPorData!).map(([data, horarios]) => (
                                                     <tr key={data}>
                                                         <td>{data}</td>
                                                         <td>{horarios.sort().join(', ')}</td> {/* Ordenação aqui */}
                                                         <td>
                                                             <button
                                                                 className={styles.deleteButton}
-                                                                onClick={() => handleExcluirDataRotativa(disponibilidade.id, data)}
+                                                                onClick={() => handleExcluirDataRotativa(disponibilidade.id!, data)}
                                                             >
                                                                 Excluir Data
                                                             </button>

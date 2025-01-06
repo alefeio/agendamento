@@ -1,4 +1,3 @@
-// src/pages/Medico.tsx
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +20,7 @@ const Medico: React.FC = () => {
   const [medicos, setMedicos] = useState<Medico[]>([]);
   const [especialidades, setEspecialidades] = useState<Especialidade[]>([]);
   const [novoMedico, setNovoMedico] = useState({ nome: '', crm: '', especialidadeId: '' });
-  const [mostrarFormulario, setMostrarFormulario] = useState(false); // Novo estado para controle do formulário
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,6 +31,9 @@ const Medico: React.FC = () => {
         id: doc.id,
         ...doc.data(),
       })) as Medico[];
+
+      // Ordenar os médicos por nome
+      listaMedicos.sort((a, b) => a.nome.localeCompare(b.nome));
       setMedicos(listaMedicos);
     };
 
@@ -62,7 +64,13 @@ const Medico: React.FC = () => {
 
     const medicosRef = collection(db, 'medicos');
     const docRef = await addDoc(medicosRef, { nome, crm, especialidadeId });
-    setMedicos((prev) => [...prev, { id: docRef.id, nome, crm, especialidadeId }]);
+
+    setMedicos((prev) => {
+      const novaLista = [...prev, { id: docRef.id, nome, crm, especialidadeId }];
+      // Ordenar novamente após adicionar
+      return novaLista.sort((a, b) => a.nome.localeCompare(b.nome));
+    });
+
     setNovoMedico({ nome: '', crm: '', especialidadeId: '' });
     setMostrarFormulario(false); // Fechar o formulário após adicionar
   };
@@ -73,6 +81,7 @@ const Medico: React.FC = () => {
 
     const medicoDocRef = doc(db, 'medicos', id);
     await deleteDoc(medicoDocRef);
+
     setMedicos((prev) => prev.filter((medico) => medico.id !== id));
   };
 
@@ -85,7 +94,7 @@ const Medico: React.FC = () => {
       <h2>Médicos</h2>
 
       <button
-        onClick={() => setMostrarFormulario((prev) => !prev)} // Alterna a visibilidade do formulário
+        onClick={() => setMostrarFormulario((prev) => !prev)}
         className={styles.novoMedicoButton}
       >
         Adicionar Novo Médico

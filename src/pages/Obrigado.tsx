@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styles from './Obrigado.module.css';  // CSS modular
 
 import logo from '../assets/logo.jpeg';

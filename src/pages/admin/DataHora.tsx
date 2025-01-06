@@ -47,29 +47,38 @@ const Agendamentos: React.FC = () => {
       try {
         const agendamentosRef = collection(db, 'agendamentos');
         const snapshot = await getDocs(agendamentosRef);
-        const listaAgendamentos = snapshot.docs.map((doc) => {
-          const data = doc.data();
+        const listaAgendamentos = snapshot.docs
+          .map((doc) => {
+            const data = doc.data();
 
-          return {
-            id: doc.id,
-            dadosPessoais: {
-              nome: data?.dadosPessoais?.nome || 'Nome não informado',
-              email: data?.dadosPessoais?.email || 'Email não informado',
-              cpf: data?.dadosPessoais?.cpf || '',
-              telefone: data?.dadosPessoais?.telefone || '',
-              endereco: data?.dadosPessoais?.endereco || '',
-            },
-            especialidade: data?.especialidade || 'Especialidade não informada',
-            convenio: {
-              id: data?.convenio?.id || '',
-              nome: data?.convenio?.nome || 'Convênio não informado',
-            },
-            medico: data?.medico || null,
-            data: data?.data || '',
-            horario: data?.horario || '',
-            dataCadastro: data?.dataCadastro || 'Data não informada', // Data de cadastro
-          };
-        }) as Agendamento[];
+            return {
+              id: doc.id,
+              dadosPessoais: {
+                nome: data?.dadosPessoais?.nome || 'Nome não informado',
+                email: data?.dadosPessoais?.email || 'Email não informado',
+                cpf: data?.dadosPessoais?.cpf || '',
+                telefone: data?.dadosPessoais?.telefone || '',
+                endereco: data?.dadosPessoais?.endereco || '',
+              },
+              especialidade: data?.especialidade || 'Especialidade não informada',
+              convenio: {
+                id: data?.convenio?.id || '',
+                nome: data?.convenio?.nome || 'Convênio não informado',
+              },
+              medico: data?.medico || null,
+              data: data?.data || '',
+              horario: data?.horario || '',
+              dataCadastro: data?.dataCadastro || 'Data não informada', // Data de cadastro
+            };
+          }) as Agendamento[];
+
+        // Ordenar agendamentos por dataCadastro em ordem decrescente
+        listaAgendamentos.sort((a, b) => {
+          const dataA = new Date(a.dataCadastro).getTime();
+          const dataB = new Date(b.dataCadastro).getTime();
+          return dataB - dataA; // Decrescente
+        });
+
         setAgendamentos(listaAgendamentos);
         setLoading(false);
       } catch (err) {
@@ -125,12 +134,7 @@ const Agendamentos: React.FC = () => {
                     Telefone: {agendamento.dadosPessoais.telefone}<br />
                     CPF: {agendamento.dadosPessoais.cpf}<br />
                     End: {agendamento.dadosPessoais.endereco}<br />
-                    <small>
-                      Data Cadastro:
-                      {agendamento.dataCadastro.split(',')[0]},
-                      {agendamento.dataCadastro.split(',')[1].split(':')[0]}:
-                      {agendamento.dataCadastro.split(',')[1].split(':')[1]}
-                    </small>
+                    <small>Data Cadastro: {agendamento.dataCadastro}</small>
                   </td>
                   <td>{agendamento.especialidade.nome}</td>
                   <td>{agendamento.convenio?.nome || 'Convênio não informado'}</td>

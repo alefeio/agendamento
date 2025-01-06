@@ -1,6 +1,5 @@
 // src/pages/StepFlow.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAgendamento } from '../context/AgendamentoContext';
 import DadosPessoais from './DadosPessoais';
 import Especialidade from './Especialidade';
@@ -13,7 +12,6 @@ import logo from '../assets/logo.jpeg';
 const StepFlow: React.FC = () => {
   const { agendamentoData } = useAgendamento();
   const [step, setStep] = useState(1);
-  const navigate = useNavigate();
 
   const steps = [
     { id: 1, component: <DadosPessoais />, label: 'Dados Pessoais' },
@@ -25,7 +23,6 @@ const StepFlow: React.FC = () => {
 
   const handleNext = () => setStep((prevStep) => Math.min(prevStep + 1, steps.length));
   const handlePrevious = () => setStep((prevStep) => Math.max(prevStep - 1, 1));
-  const handleFinish = () => navigate('/');
 
   return (
     <div className={styles.pageWrapper}>

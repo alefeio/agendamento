@@ -60,7 +60,7 @@ const Especialidade: React.FC = () => {
 
     setAgendamentoData((prevData) => ({
       ...prevData,
-      especialidade: especialidadeSelecionada || null,
+      especialidade: especialidadeSelecionada!,
     }));
   };
 

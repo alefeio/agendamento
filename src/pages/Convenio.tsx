@@ -44,7 +44,7 @@ const Convenio: React.FC = () => {
 
     setAgendamentoData((prev) => ({
       ...prev,
-      convenio: convenioSelecionado || null,
+      convenio: convenioSelecionado!,
     }));
   };
 

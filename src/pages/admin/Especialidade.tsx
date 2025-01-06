@@ -1,4 +1,3 @@
-// src/pages/Especialidade.tsx
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
@@ -12,7 +11,7 @@ interface Especialidade {
 const Especialidade: React.FC = () => {
   const [especialidades, setEspecialidades] = useState<Especialidade[]>([]);
   const [novaEspecialidade, setNovaEspecialidade] = useState('');
-  const [mostrarFormulario, setMostrarFormulario] = useState(false); // Novo estado para controle do formulário
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
   // Carregar especialidades do Firebase
   useEffect(() => {
@@ -24,6 +23,10 @@ const Especialidade: React.FC = () => {
         id: doc.id,
         nome: doc.data().nome,
       }));
+
+      // Ordenar as especialidades por nome em ordem alfabética
+      listaEspecialidades.sort((a, b) => a.nome.localeCompare(b.nome));
+
       setEspecialidades(listaEspecialidades);
     };
 
@@ -39,9 +42,15 @@ const Especialidade: React.FC = () => {
 
     const especialidadesRef = collection(db, 'especialidades');
     const docRef = await addDoc(especialidadesRef, { nome: novaEspecialidade });
-    setEspecialidades((prev) => [...prev, { id: docRef.id, nome: novaEspecialidade }]);
+
+    setEspecialidades((prev) => {
+      const novaLista = [...prev, { id: docRef.id, nome: novaEspecialidade }];
+      // Ordenar novamente após adicionar uma nova especialidade
+      return novaLista.sort((a, b) => a.nome.localeCompare(b.nome));
+    });
+
     setNovaEspecialidade('');
-    setMostrarFormulario(false); // Fechar o formulário após adicionar
+    setMostrarFormulario(false);
   };
 
   // Excluir especialidade
@@ -51,6 +60,7 @@ const Especialidade: React.FC = () => {
 
     const especialidadeDocRef = doc(db, 'especialidades', id);
     await deleteDoc(especialidadeDocRef);
+
     setEspecialidades((prev) => prev.filter((especialidade) => especialidade.id !== id));
   };
 
@@ -59,7 +69,7 @@ const Especialidade: React.FC = () => {
       <h2>Especialidades</h2>
       
       <button 
-        onClick={() => setMostrarFormulario((prev) => !prev)} // Alterna a visibilidade do formulário
+        onClick={() => setMostrarFormulario((prev) => !prev)}
         className={styles.novaEspecialidadeButton}
       >
         Nova Especialidade

@@ -1,4 +1,3 @@
-// src/pages/Convenio.tsx
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
@@ -12,7 +11,7 @@ interface Convenio {
 const Convenio: React.FC = () => {
   const [convenios, setConvenios] = useState<Convenio[]>([]);
   const [novoConvenio, setNovoConvenio] = useState('');
-  const [mostrarFormulario, setMostrarFormulario] = useState(false); // Novo estado para controle do formulário
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
   // Carregar convênios do Firebase
   useEffect(() => {
@@ -23,6 +22,10 @@ const Convenio: React.FC = () => {
         id: doc.id,
         nome: doc.data().nome,
       }));
+
+      // Ordenar os convênios por nome em ordem alfabética
+      listaConvenios.sort((a, b) => a.nome.localeCompare(b.nome));
+
       setConvenios(listaConvenios);
     };
 
@@ -38,7 +41,13 @@ const Convenio: React.FC = () => {
 
     const conveniosRef = collection(db, 'convenios');
     const docRef = await addDoc(conveniosRef, { nome: novoConvenio });
-    setConvenios((prev) => [...prev, { id: docRef.id, nome: novoConvenio }]);
+
+    setConvenios((prev) => {
+      const novaLista = [...prev, { id: docRef.id, nome: novoConvenio }];
+      // Ordenar novamente após adicionar um novo convênio
+      return novaLista.sort((a, b) => a.nome.localeCompare(b.nome));
+    });
+
     setNovoConvenio('');
     setMostrarFormulario(false); // Fechar o formulário após adicionar
   };
@@ -50,6 +59,7 @@ const Convenio: React.FC = () => {
 
     const convenioDocRef = doc(db, 'convenios', id);
     await deleteDoc(convenioDocRef);
+
     setConvenios((prev) => prev.filter((convenio) => convenio.id !== id));
   };
 
