@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+// @ts-ignore
 import { auth } from '../../firebaseConfig'
 import styles from './Cadastro.module.css';
 

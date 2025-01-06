@@ -1,6 +1,7 @@
 // src/pages/Medico.tsx
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+// @ts-ignore
 import { db } from '../../firebaseConfig';
 import { useAgendamento } from '../context/AgendamentoContext';
 import styles from './Medico.module.css';

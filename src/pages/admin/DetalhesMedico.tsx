@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, collection, getDocs, deleteDoc, setDoc } from 'firebase/firestore';
+// @ts-ignore
 import { db } from '../../../firebaseConfig';
 import styles from './DetalhesMedico.module.css';
 import { Disponibilidade } from '../../components/Disponibilidade';

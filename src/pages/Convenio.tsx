@@ -1,6 +1,7 @@
 // src/pages/Convenio.tsx
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
+// @ts-ignore
 import { db } from '../../firebaseConfig';
 import { useAgendamento } from '../context/AgendamentoContext';
 import styles from './Convenio.module.css';

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { doc, collection, getDocs, deleteDoc, setDoc, addDoc } from 'firebase/firestore';
+// @ts-ignore
 import { db } from '../../firebaseConfig';
 import styles from './Disponibilidade.module.css';
 
@@ -14,7 +15,7 @@ interface Disponibilidad {
     diasDaSemanaComHorarios?: { [key: string]: string[] };
 }
 
-export const Disponibilidade = ({ id }: { id: string }) => {
+export const Disponibilidade = ({ id }: { id: any }) => {
     const [tipoAgenda, setTipoAgenda] = useState<'fixa' | 'rotativa' | ''>('');
     const [diasSemana, setDiasSemana] = useState<boolean[]>(new Array(7).fill(false));
     const [horarios, setHorarios] = useState<string[]>([]);
