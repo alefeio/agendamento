@@ -1,9 +1,8 @@
 .contentWrapper {
-    background: #fff;
+    background: #fff !important;
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
     width: 100%;
     text-align: center;
 }

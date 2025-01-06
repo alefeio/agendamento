@@ -19,22 +19,8 @@ body {
     background-color: #f4f6f9;
     /* Cor de fundo opcional */
     -webkit-font-smoothing: antialiased;
-}
-
-.pageWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    font-family: Arial, sans-serif;
-}
-
-.contentWrapper {
-    background: #fff;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    width: 100vw;
+    overflow: auto;
 }
 
 .react-calendar {
@@ -53,7 +39,8 @@ body {
     color: #333 !important;
 }
 
-.react-calendar__navigation__label, .react-calendar__navigation__arrow {
+.react-calendar__navigation__label,
+.react-calendar__navigation__arrow {
     color: white !important;
     background: #04457d !important;
 }

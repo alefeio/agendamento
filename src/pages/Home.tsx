@@ -6,7 +6,7 @@ import logo from '../assets/logo.jpeg';
 
 const Home: React.FC = () => {
   return (
-    <div className={styles.pageWrapper}>
+    <div className={styles.pg}>
       <div className={styles.contentWrapper}>
         <img
           src={logo} alt="Logo Unigrastro"
