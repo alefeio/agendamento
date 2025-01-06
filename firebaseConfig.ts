@@ -1,7 +1,8 @@
 // src/firebase.ts
-import { initializeApp } from 'firebase/app';
+import { FirebaseApp, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { Firestore, getFirestore } from 'firebase/firestore';
+import { getAnalytics } from 'firebase/analytics';
 
 // Configurações do Firebase (substitua pelos seus dados do Firebase Console)
 const firebaseConfig = {
@@ -15,8 +16,10 @@ const firebaseConfig = {
 };
 
 // Inicializando o Firebase
-const app = initializeApp(firebaseConfig);
+const app: FirebaseApp = initializeApp(firebaseConfig);
 
 // Exportando os serviços que serão usados no projeto
 export const auth = getAuth(app); // Serviço de autenticação
-export const db = getFirestore(app); // Serviço de banco de dados Firestore
+export const db: Firestore = getFirestore(app); // Serviço de banco de dados Firestore
+const analytics = getAnalytics(app);
+export { analytics };
