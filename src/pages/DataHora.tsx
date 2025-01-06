@@ -255,7 +255,7 @@ const DataHora: React.FC = () => {
 
         <div className={styles.calendarWrapper}>
           <Calendar
-            onChange={() => setDataSelecionada(dataSelecionada)}
+            onChange={setDataSelecionada}
             value={dataSelecionada}
             tileDisabled={({ date }) => isDiaIndisponivel(date)}
             tileClassName={({ date }) => {
