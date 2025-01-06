@@ -1,0 +1,74 @@
+h3, h4 {
+    margin-top: 20px;
+}
+
+.button {
+    background-color: #007bff;
+    border: none;
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 5px
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.tabelaWrapper {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.responsiveTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .responsiveTable th,
+  .responsiveTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .responsiveTable th {
+    background-color: #f4f4f4;
+  }
+  
+  .responsiveTable tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .responsiveTable tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+
+.deleteButton {
+    background-color: #ff6b6b;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.deleteButton:hover {
+    background-color: darkred;
+}
+
+.box1 h2 {
+    margin-top: 50px;
+}
+
+.addDisponibilidade {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    padding: 20px;
+    margin: 20px 0;
+}

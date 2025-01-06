@@ -1,114 +1,143 @@
 // src/pages/Medico.tsx
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useAgendamento } from '../context/AgendamentoContext'; // Importando o contexto
-import styles from './Medico.module.css'; // Importando o CSS como módulo
-
-interface Convenio {
-  id: number;
-  nome: string;
-  limiteMensal: number;
-  count: number; // número de consultas realizadas no mês
-}
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
+import { useAgendamento } from '../context/AgendamentoContext';
+import styles from './Medico.module.css';
 
 interface Medico {
-  id: number;
+  id: string;
   nome: string;
+  especialidadeId: string;
+  convenios: { id: string; nome: string; limiteMensal: number; atingiuLimite: boolean }[];
 }
 
-const MedicoPage: React.FC = () => {
-  const { agendamentoData, setAgendamentoData } = useAgendamento(); // Usando o contexto
+const Medico: React.FC = () => {
   const [medicos, setMedicos] = useState<Medico[]>([]);
-  const [convenios, setConvenios] = useState<Convenio[]>([]);
-  const [selectedConvenio, setSelectedConvenio] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { agendamentoData, setAgendamentoData } = useAgendamento();
 
   useEffect(() => {
-    const fetchConvenios = async () => {
+    const fetchMedicos = async () => {
       try {
-        const response = await axios.get('https://api.example.com/convenios');
-        setConvenios(response.data);
-      } catch (error) {
-        console.error('Erro ao buscar convênios:', error);
+        if (!agendamentoData.convenio?.id || !agendamentoData.especialidade?.id) {
+          setMedicos([]);
+          setIsLoading(false);
+          return;
+        }
+
+        const medicosRef = collection(db, 'medicos');
+        const snapshot = await getDocs(medicosRef);
+
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth() + 1;
+        const currentYear = currentDate.getFullYear();
+
+        const listaMedicos = await Promise.all(
+          snapshot.docs.map(async (doc) => {
+            const medicoData = doc.data();
+            const medicoId = doc.id;
+
+            const conveniosRef = collection(db, `medicos/${medicoId}/convenios`);
+            const conveniosSnapshot = await getDocs(conveniosRef);
+            const convenios = await Promise.all(
+              conveniosSnapshot.docs.map(async (convenioDoc) => {
+                const convenioData = convenioDoc.data();
+
+                const agendamentosRef = collection(db, 'agendamentos');
+                const agendamentosQuery = query(
+                  agendamentosRef,
+                  where('medicoId', '==', medicoId),
+                  where('convenioId', '==', convenioDoc.id),
+                  where('mes', '==', currentMonth),
+                  where('ano', '==', currentYear)
+                );
+                const agendamentosSnapshot = await getDocs(agendamentosQuery);
+                const totalAgendamentos = agendamentosSnapshot.size;
+
+                return {
+                  id: convenioDoc.id,
+                  nome: convenioData.nome,
+                  limiteMensal: convenioData.limiteMensal,
+                  atingiuLimite: totalAgendamentos >= convenioData.limiteMensal,
+                };
+              })
+            );
+
+            return {
+              id: medicoId,
+              nome: medicoData.nome,
+              especialidadeId: medicoData.especialidadeId,
+              convenios,
+            };
+          })
+        );
+
+        const medicosFiltrados = listaMedicos.filter(
+          (medico) =>
+            medico.especialidadeId === agendamentoData.especialidade.id &&
+            medico.convenios.some(
+              (convenio) =>
+                convenio.id === agendamentoData.convenio.id && !convenio.atingiuLimite
+            )
+        );
+
+        setMedicos(medicosFiltrados);
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Erro ao buscar médicos:', err);
+        setError('Não foi possível carregar os médicos. Tente novamente.');
+        setIsLoading(false);
       }
     };
 
-    fetchConvenios();
-  }, []);
+    fetchMedicos();
+  }, [agendamentoData.convenio, agendamentoData.especialidade]);
 
-  useEffect(() => {
-    if (selectedConvenio) {
-      const fetchMedicos = async () => {
-        try {
-          const response = await axios.get(`https://api.example.com/medicos?convenio=${selectedConvenio}`);
-          const filteredMedicos = response.data.filter((medico: Medico) => {
-            const convenio = convenios.find((c) => c.id === selectedConvenio);
-            return convenio ? convenio.count < convenio.limiteMensal : true;
-          });
-          setMedicos(filteredMedicos);
-        } catch (error) {
-          console.error('Erro ao buscar médicos:', error);
-        }
-      };
+  const handleMedicoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const medicoId = e.target.value;
+    const medicoSelecionado = medicos.find((medico) => medico.id === medicoId);
 
-      fetchMedicos();
-    }
-  }, [selectedConvenio, convenios]);
-
-  const handleSelectMedico = (medicoId: number) => {
-    const selectedMedico = medicos.find((medico) => medico.id === medicoId);
-    if (selectedMedico) {
-      setAgendamentoData((prevState) => ({
-        ...prevState,
-        medico: selectedMedico,
-      }));
-    }
-  };
-
-  const handleSelectConvenio = (convenioId: number) => {
-    setSelectedConvenio(convenioId);
-    const selectedConvenio = convenios.find((c) => c.id === convenioId);
-    if (selectedConvenio) {
-      setAgendamentoData((prevState) => ({
-        ...prevState,
-        convenio: selectedConvenio,
-      }));
-    }
+    setAgendamentoData((prev) => ({
+      ...prev,
+      medico: medicoSelecionado ? { id: medicoSelecionado.id, nome: medicoSelecionado.nome } : null,
+    }));
   };
 
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.contentWrapper}>
-        <h1 className={styles.title}>Agendamento de Consultas</h1>
-        
-        {/* Select de Convênios */}
-        <div className={styles.selectWrapper}>
-          <select
-            value={selectedConvenio || ''}
-            onChange={(e) => handleSelectConvenio(Number(e.target.value))}
-          >
-            <option value="">Escolha o Convênio</option>
-            {convenios.map((convenio) => (
-              <option key={convenio.id} value={convenio.id}>
-                {convenio.nome}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Select de Médicos */}
-        <div className={styles.selectWrapper}>
-          <select onChange={(e) => handleSelectMedico(Number(e.target.value))} disabled={!selectedConvenio}>
-            <option value="">Escolha o médico para consulta</option>
-            {medicos.map((medico) => (
-              <option key={medico.id} value={medico.id}>
-                {medico.nome}
-              </option>
-            ))}
-          </select>
-        </div>
+        <h1 className={styles.title}>Médico</h1>
+        {isLoading ? (
+          <p className={styles.loading}>Carregando médicos...</p>
+        ) : error ? (
+          <p className={styles.error}>{error}</p>
+        ) : medicos.length === 0 ? (
+          <p className={styles.noMedicos}>Nenhum médico disponível.</p>
+        ) : (
+          <div className={styles.selectWrapper}>
+            <label htmlFor="medico" className={styles.label}>
+              Selecione um médico:
+            </label>
+            <select
+              id="medico"
+              value={agendamentoData.medico?.id || ''}
+              onChange={handleMedicoChange}
+              className={styles.select}
+            >
+              <option value="">Selecione um médico</option>
+              {medicos.map((medico) => (
+                <option key={medico.id} value={medico.id}>
+                  {medico.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default MedicoPage;
+export default Medico;

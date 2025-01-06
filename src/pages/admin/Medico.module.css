@@ -1,0 +1,155 @@
+.container {
+    padding: 20px;
+  }
+  
+  .formGroup {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+  }
+  
+  .responsiveTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .responsiveTable th,
+  .responsiveTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .responsiveTable th {
+    background-color: #f4f4f4;
+  }
+  
+  .responsiveTable tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .responsiveTable tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .detalhesBtn {
+    background-color: #007bff !important;
+    color: white;
+    margin-right: 5px;
+  }
+  
+  .detalhesBtn:hover {
+    background-color: #0056b3 !important;
+  }
+  
+  .excluirBtn {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .excluirBtn:hover {
+    background-color: #a71d2a;
+  }
+  
+  /* src/pages/Medico.module.css */
+
+.novoMedicoButton {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .novoMedicoButton:hover {
+    background-color: #2980b9;
+  }
+  
+  .formGroup {
+    margin-top: 20px;
+  }
+  
+  .formGroup input,
+  .formGroup select {
+    margin: 5px 0;
+    padding: 10px;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .formGroup button {
+    background-color: #2ecc71;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .formGroup button:hover {
+    background-color: #27ae60;
+  }
+  
+  .responsiveTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .responsiveTable th,
+  .responsiveTable td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  .responsiveTable th {
+    background-color: #f4f4f4;
+    color: #333;
+  }
+  
+  .responsiveTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .responsiveTable tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .detalhesBtn,
+  .excluirBtn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .detalhesBtn:hover,
+  .excluirBtn:hover {
+    background-color: #c0392b;
+  }
+  
+  @media (max-width: 600px) {
+    .responsiveTable th, .responsiveTable td {
+      font-size: 14px;
+      padding: 10px;
+    }
+  }
+  

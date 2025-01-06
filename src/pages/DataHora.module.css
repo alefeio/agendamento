@@ -1,13 +1,3 @@
-.pageWrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 60vh;
-    background-color: #f4f6f9;
-    font-family: 'Arial', sans-serif;
-    padding: 20px;
-}
-
 .contentWrapper {
     background: #fff;
     padding: 40px;
@@ -19,9 +9,8 @@
 }
 
 .title {
-    font-size: 2.5rem;
-    color: #333;
-    text-align: center;
+    font-size: 1.8rem;
+    color: #007bff;
     margin-bottom: 20px;
 }
 
@@ -48,19 +37,10 @@ h2 {
     color: #333;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
-    font-size: 1.1rem;
-    color: #555;
-}
-
-li {
-    margin: 10px 0;
-}
-
 .buttonsWrapper {
     display: flex;
+    align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 20px;
@@ -83,4 +63,28 @@ li {
     margin-top: 20px;
     font-size: 18px;
     color: #333;
+}
+
+.saveButton {
+    margin-top: 30px;
+    padding: 15px 30px;
+    background-color: #007bff;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.saveButton:disabled {
+    background-color: #999;
+}
+
+.saveButton:hover {
+    background-color: #0056b3;
+}
+
+.tileAvailable {
+    background-color: #9fceff;
 }

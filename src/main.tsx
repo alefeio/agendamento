@@ -15,6 +15,8 @@ import Login from './pages/Login';
 import PrivateRoute from './components/PrivateRoute';
 import Restrito from './pages/admin/Restrito';
 import { AgendamentoProvider } from './context/AgendamentoContext';
+import DetalhesMedico from './pages/admin/DetalhesMedico';
+import Obrigado from './pages/Obrigado';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <AgendamentoProvider>
@@ -30,6 +32,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/data-hora" element={<DataHora />} />
           <Route path="/painel-gestao" element={<PainelGestao />} />
           <Route path="/step-flow" element={<StepFlow />} />
+          <Route path="/medicos/:id" element={<DetalhesMedico />} />
+          <Route path="/obrigado" element={<Obrigado />} />
           <Route
             path="/restrito"
             element={

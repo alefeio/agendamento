@@ -1,14 +1,4 @@
-/* src/pages/DadosPessoais.module.css */
 
-.pageWrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 60vh;
-    background-color: #f4f6f9;
-    font-family: 'Arial', sans-serif;
-    padding: 20px;
-  }
   
   .contentWrapper {
     background: #fff;
@@ -21,7 +11,7 @@
   
   .title {
     font-size: 2rem;
-    color: #333;
+    color: #007bff;
     text-align: center;
     margin-bottom: 15px;
   }

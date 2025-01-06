@@ -1,9 +1,8 @@
-// src/pages/Especialidade.tsx
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
-import { useAgendamento } from '../context/AgendamentoContext'; // Importando o hook para acessar o contexto
-import styles from './Especialidade.module.css'; // Importando o CSS como módulo
+import { useAgendamento } from '../context/AgendamentoContext';
+import styles from './Especialidade.module.css';
 
 interface Especialidade {
   id: string;
@@ -12,37 +11,56 @@ interface Especialidade {
 
 const Especialidade: React.FC = () => {
   const [especialidades, setEspecialidades] = useState<Especialidade[]>([]);
-  const { agendamentoData, setAgendamentoData } = useAgendamento(); // Acessando o contexto
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { agendamentoData, setAgendamentoData } = useAgendamento();
 
   useEffect(() => {
-    const fetchEspecialidades = async () => {
+    const fetchEspecialidadesComMedicos = async () => {
       try {
         const especialidadesRef = collection(db, 'especialidades');
-        const snapshot = await getDocs(especialidadesRef);
-        const listaEspecialidades = snapshot.docs.map((doc) => ({
+        const snapshotEspecialidades = await getDocs(especialidadesRef);
+
+        const listaEspecialidades = snapshotEspecialidades.docs.map((doc) => ({
           id: doc.id,
           nome: doc.data().nome,
         }));
-        setEspecialidades(listaEspecialidades);
-      } catch (error) {
-        console.error('Erro ao buscar especialidades:', error);
+
+        // Filtrar especialidades com médicos
+        const especialidadesComMedicos = [];
+        for (const especialidade of listaEspecialidades) {
+          const medicosRef = collection(db, 'medicos');
+          const queryMedicos = query(
+            medicosRef,
+            where('especialidadeId', '==', especialidade.id)
+          );
+          const snapshotMedicos = await getDocs(queryMedicos);
+
+          if (!snapshotMedicos.empty) {
+            especialidadesComMedicos.push(especialidade);
+          }
+        }
+
+        setEspecialidades(especialidadesComMedicos);
+        setIsLoading(false);
+      } catch (err) {
+        setError('Erro ao carregar especialidades. Tente novamente.');
+        setIsLoading(false);
       }
     };
 
-    fetchEspecialidades();
+    fetchEspecialidadesComMedicos();
   }, []);
 
-  // Função para atualizar a especialidade no contexto
   const handleEspecialidadeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const especialidadeId = e.target.value;
     const especialidadeSelecionada = especialidades.find(
       (especialidade) => especialidade.id === especialidadeId
     );
 
-    // Atualizando o estado do contexto
     setAgendamentoData((prevData) => ({
       ...prevData,
-      especialidade: especialidadeSelecionada ? especialidadeSelecionada.nome : '',
+      especialidade: especialidadeSelecionada || null,
     }));
   };
 
@@ -50,19 +68,31 @@ const Especialidade: React.FC = () => {
     <div className={styles.pageWrapper}>
       <div className={styles.contentWrapper}>
         <h1 className={styles.title}>Especialidade</h1>
-        <div className={styles.selectWrapper}>
-          <select
-            value={agendamentoData.especialidade} // Controlando o valor da especialidade selecionada
-            onChange={handleEspecialidadeChange} // Chamando a função para atualizar o contexto
-          >
-            <option value="">Selecione uma especialidade</option>
-            {especialidades.map((especialidade) => (
-              <option key={especialidade.id} value={especialidade.id}>
-                {especialidade.nome}
-              </option>
-            ))}
-          </select>
-        </div>
+
+        {isLoading ? (
+          <p className={styles.loading}>Carregando especialidades...</p>
+        ) : error ? (
+          <p className={styles.error}>{error}</p>
+        ) : (
+          <div className={styles.selectWrapper}>
+            <label htmlFor="especialidade" className={styles.label}>
+              Escolha a Especialidade:
+            </label>
+            <select
+              id="especialidade"
+              value={agendamentoData.especialidade?.id || ''}
+              onChange={handleEspecialidadeChange}
+              className={styles.select}
+            >
+              <option value="">Selecione uma especialidade</option>
+              {especialidades.map((especialidade) => (
+                <option key={especialidade.id} value={especialidade.id}>
+                  {especialidade.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
     </div>
   );

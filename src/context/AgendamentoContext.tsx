@@ -10,11 +10,16 @@ interface AgendamentoData {
     telefone: string;
     endereco: string;
   };
-  especialidade: string;
-  convenio: {
+  especialidade: {
+    id: string;
     nome: string;
-  } | null;
+  };
+  convenio: {
+    id: string;
+    nome: string;
+  };
   medico: {
+    id: string;
     nome: string;
   } | null;
   dataAgendamento: string;
@@ -27,8 +32,8 @@ const AgendamentoContext = createContext<{
 }>({
   agendamentoData: {
     dadosPessoais: { nome: '', email: '', cpf: '', telefone: '', endereco: '' },
-    especialidade: '',
-    convenio: null,
+    especialidade: { id: '', nome: ''},
+    convenio: { id: '', nome: ''},
     medico: null,
     dataAgendamento: '',
   },
@@ -39,8 +44,8 @@ const AgendamentoContext = createContext<{
 export const AgendamentoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [agendamentoData, setAgendamentoData] = useState<AgendamentoData>({
     dadosPessoais: { nome: '', email: '', cpf: '', telefone: '', endereco: '' },
-    especialidade: '',
-    convenio: null,
+    especialidade: { id: '', nome: ''},
+    convenio: { id: '', nome: '' },
     medico: null,
     dataAgendamento: '',
   });

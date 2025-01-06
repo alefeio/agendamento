@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
+import styles from './Coonvenio.module.css'; // Importando o CSS
 
 interface Convenio {
   id: string;
@@ -11,6 +12,7 @@ interface Convenio {
 const Convenio: React.FC = () => {
   const [convenios, setConvenios] = useState<Convenio[]>([]);
   const [novoConvenio, setNovoConvenio] = useState('');
+  const [mostrarFormulario, setMostrarFormulario] = useState(false); // Novo estado para controle do formulário
 
   // Carregar convênios do Firebase
   useEffect(() => {
@@ -38,6 +40,7 @@ const Convenio: React.FC = () => {
     const docRef = await addDoc(conveniosRef, { nome: novoConvenio });
     setConvenios((prev) => [...prev, { id: docRef.id, nome: novoConvenio }]);
     setNovoConvenio('');
+    setMostrarFormulario(false); // Fechar o formulário após adicionar
   };
 
   // Excluir convênio
@@ -53,23 +56,53 @@ const Convenio: React.FC = () => {
   return (
     <div>
       <h2>Convênios</h2>
-      <ul>
-        {convenios.map((convenio) => (
-          <li key={convenio.id}>
-            {convenio.nome}
-            <button onClick={() => handleExcluirConvenio(convenio.id)}>Excluir</button>
-          </li>
-        ))}
-      </ul>
+      
+      <button 
+        onClick={() => setMostrarFormulario((prev) => !prev)} // Alterna a visibilidade do formulário
+        className={styles.novoConvenioButton}
+      >
+        Novo Convênio
+      </button>
+      
+      {mostrarFormulario && (
+        <div>
+          <h3>Adicionar Novo Convênio</h3>
+          <div>
+            <input
+              type="text"
+              value={novoConvenio}
+              onChange={(e) => setNovoConvenio(e.target.value)}
+              placeholder="Novo convênio"
+            />
+            <button onClick={handleAdicionarConvenio}>Adicionar</button>
+          </div>
+        </div>
+      )}
 
-      <div>
-        <input
-          type="text"
-          value={novoConvenio}
-          onChange={(e) => setNovoConvenio(e.target.value)}
-          placeholder="Novo convênio"
-        />
-        <button onClick={handleAdicionarConvenio}>Adicionar</button>
+      <div className={styles.tabelaWrapper}>
+        <table className={styles.tabela}>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {convenios.map((convenio) => (
+              <tr key={convenio.id}>
+                <td>{convenio.nome}</td>
+                <td>
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => handleExcluirConvenio(convenio.id)}
+                  >
+                    Excluir
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

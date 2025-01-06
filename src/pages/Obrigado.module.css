@@ -38,7 +38,7 @@
 
 .title span {
     font-size: 2rem;
-    color: #999;
+    color: #43a047;
 }
 
 .subtitle {
@@ -49,7 +49,7 @@
 
 /* Botão de Ação */
 .button {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     padding: 15px 30px;
     background: linear-gradient(45deg, #66bb6a, #43a047);
     color: white;
@@ -93,16 +93,12 @@
     }
 
     .button {
-        font-size: 1.2rem; /* Botão com fonte menor */
+        font-size: 1rem; /* Botão com fonte menor */
         padding: 12px 25px; /* Menos padding */
     }
 }
 
 @media (max-width: 480px) {
-    .contentWrapper {
-        padding: 20px; /* Menos padding ainda em telas pequenas */
-    }
-
     .title {
         font-size: 1.1rem; /* Fonte ainda menor para telas pequenas */
     }
@@ -112,7 +108,7 @@
     }
 
     .button {
-        font-size: 1.1rem; /* Fonte menor */
+        font-size: 0.9rem; /* Fonte menor */
         padding: 10px 20px; /* Ajuste no padding para caber melhor */
     }
 

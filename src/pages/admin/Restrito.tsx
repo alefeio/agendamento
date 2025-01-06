@@ -7,12 +7,21 @@ import Convenio from './Convenio';
 import Medico from './Medico';
 import DataHora from './DataHora';
 import styles from './Restrito.module.css';
-import MedicoConvenio from './MedicoConvenio';
 
 const Restrito: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'especialidades' | 'convenios' | 'medicos' | 'horarios' | 'relacao'>('especialidades');
+  const [activeTab, setActiveTab] = useState<'especialidades' | 'convenios' | 'medicos' | 'horarios' | 'relacao'>('horarios');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+
+  // Pegando os parâmetros da query string
+  useEffect(() => {
+    const params = new URLSearchParams(location.search); // Usando URLSearchParams para ler a query string
+    const tab = params.get('tab'); // Pega o valor do parâmetro 'tab'
+
+    if (tab) {
+      setActiveTab(tab as 'especialidades' | 'convenios' | 'medicos' | 'horarios' | 'relacao');
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const auth = getAuth();
@@ -40,16 +49,14 @@ const Restrito: React.FC = () => {
 
   const renderTabContent = () => {
     switch (activeTab) {
+      case 'horarios':
+        return <DataHora />;
       case 'especialidades':
         return <Especialidade />;
       case 'convenios':
         return <Convenio />;
       case 'medicos':
         return <Medico />;
-      case 'horarios':
-        return <DataHora />;
-      case 'relacao':
-        return <MedicoConvenio />;
       default:
         return null;
     }
@@ -69,6 +76,12 @@ const Restrito: React.FC = () => {
 
       <div className={styles.navTabs}>
         <button
+          className={`${activeTab === 'horarios' ? styles.active : ''}`}
+          onClick={() => setActiveTab('horarios')}
+        >
+          Agendamentos
+        </button>
+        <button
           className={`${activeTab === 'especialidades' ? styles.active : ''}`}
           onClick={() => setActiveTab('especialidades')}
         >
@@ -85,18 +98,6 @@ const Restrito: React.FC = () => {
           onClick={() => setActiveTab('medicos')}
         >
           Médicos
-        </button>
-        <button
-          className={`${activeTab === 'relacao' ? styles.active : ''}`}
-          onClick={() => setActiveTab('relacao')}
-        >
-          Disponibilidade
-        </button>
-        <button
-          className={`${activeTab === 'horarios' ? styles.active : ''}`}
-          onClick={() => setActiveTab('horarios')}
-        >
-          Agendamentos
         </button>
       </div>
 

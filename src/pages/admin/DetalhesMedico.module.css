@@ -1,0 +1,267 @@
+.pageWrapper {
+    padding: 20px;
+    /* Ajustado para dar um fundo mais claro à página */
+}
+
+.box {
+    width: 100%;
+    max-width: 1200px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px auto;
+    /* Centraliza o conteúdo no eixo vertical */
+}
+
+.box header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    /* Reduzido para um espaçamento mais compacto */
+}
+
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 auto;
+    /* Centraliza o título */
+    text-align: center;
+}
+
+p {
+    font-size: 16px;
+    color: #555;
+    margin: 10px 0;
+}
+
+strong {
+    color: #333;
+}
+
+
+select,
+input[type='number'],
+input[type='time'],
+input[type='date'] {
+    width: calc(100% - 20px);
+    /* Ajuste para melhorar o layout */
+    padding: 10px;
+    margin: 10px 10px 10px 0;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+select:focus,
+input[type='number']:focus,
+input[type='time']:focus,
+input[type='date']:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+button {
+    background-color: #007bff;
+    border: none;
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 5px
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    font-size: 14px;
+    color: #555;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+li button {
+    background-color: #dc3545;
+    color: white;
+    font-size: 12px;
+    border-radius: 4px;
+    padding: 5px 10px;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+li button:hover {
+    background-color: #b02a37;
+}
+
+.backButton {
+    background-color: #6c757d;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.backButton:hover {
+    background-color: #5a6268;
+}
+
+.box1 h2 {
+    margin-top: 50px;
+}
+
+.deleteButton {
+    background-color: #ff6b6b;
+    border: none;
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.deleteButton:hover {
+    background-color: #c0392b;
+}
+
+/* Ajustes para componentes adicionais */
+.horariosWrapper {
+    margin-top: 20px;
+}
+
+.horariosWrapper input[type="time"] {
+    margin-right: 10px;
+}
+
+.diasCalendarioWrapper {
+    margin-top: 20px;
+}
+
+.diasCalendarioWrapper ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.diasCalendarioWrapper li {
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.diasCalendarioWrapper li button {
+    background-color: #28a745;
+    border: none;
+    padding: 5px 10px;
+    color: white;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.diasCalendarioWrapper li button:hover {
+    background-color: #218838;
+}
+
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+    /* Permite rolagem horizontal em telas menores */
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Adiciona uma sombra para destaque */
+    background-color: #ffffff;
+    /* Fundo branco para contraste */
+}
+
+.responsiveTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .responsiveTable th,
+  .responsiveTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .responsiveTable th {
+    background-color: #f4f4f4;
+  }
+  
+  .responsiveTable tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .responsiveTable tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+
+/* Ajuste responsivo */
+@media (max-width: 768px) {
+    .table thead {
+        display: none;
+        /* Oculta o cabeçalho em telas pequenas */
+    }
+
+    .table tbody td {
+        display: block;
+        width: 100%;
+        text-align: right;
+        /* Alinha o texto à direita */
+        padding: 10px 15px;
+        position: relative;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table tbody td::before {
+        content: attr(data-label);
+        /* Exibe o título da coluna */
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #007bff;
+    }
+
+    .table tbody tr {
+        display: block;
+        margin-bottom: 20px;
+    }
+}
+
+.addConvenio {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    padding: 20px;
+    margin: 20px 0;
+
+}
+
+.addConvenio {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    padding: 20px;
+    margin: 20px 0;
+
+}

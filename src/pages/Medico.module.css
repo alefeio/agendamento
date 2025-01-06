@@ -1,53 +1,65 @@
-/* src/pages/Medico.module.css */
-
-.pageWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 60vh;
-  background-color: #f4f6f9;
-  font-family: 'Arial', sans-serif;
-  padding: 20px;
-}
-
 .contentWrapper {
   background: #fff;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   max-width: 600px;
   width: 100%;
+  text-align: center;
 }
 
 .title {
-  font-size: 2rem;
-  color: #333;
-  text-align: center;
-  margin-bottom: 15px;
+  font-size: 1.8rem;
+  color: #007bff;
+  margin-bottom: 20px;
+}
+
+.loading,
+.error,
+.noMedicos {
+  font-size: 1rem;
+  margin-top: 15px;
+}
+
+.loading {
+  color: #555;
+}
+
+.error {
+  color: #e63946;
+}
+
+.noMedicos {
+  color: #777;
 }
 
 .selectWrapper {
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: center;
+  margin-top: 20px;
+  text-align: left;
 }
 
-select {
-  font-size: 1.1rem;
+.label {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.select {
+  width: 100%;
   padding: 10px;
+  font-size: 1rem;
   border-radius: 5px;
   border: 1px solid #ddd;
-  width: 100%;
-  max-width: 300px;
-  outline: none;
   transition: border 0.3s;
 }
 
-select:focus {
-  border-color: #4CAF50;
+.select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-option {
+.select option {
   font-size: 1rem;
   padding: 10px;
 }
