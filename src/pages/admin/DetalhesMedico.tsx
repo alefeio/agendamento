@@ -162,122 +162,120 @@ const DetalhesMedico: React.FC = () => {
     if (!medico) return <p>Carregando detalhes do médico...</p>;
 
     return (
-        <div className={styles.pageWrapper}>
-            <div className={styles.box}>
-                <header>
-                    <button className={styles.backButton} onClick={goToRestrito}>
-                        Voltar
+        <div className={styles.box}>
+            <header>
+                <button className={styles.backButton} onClick={goToRestrito}>
+                    Voltar
+                </button>
+                <h1>Detalhes do Médico</h1>
+            </header>
+            <p>
+                <strong>Nome:</strong> {medico.nome}
+            </p>
+            <p>
+                <strong>CRM:</strong> {medico.crm}
+            </p>
+            <p>
+                <strong>Especialidade:</strong> {especialidade}
+            </p>
+
+            <div className={styles.box1}>
+                <h2>Convênios Associados</h2>
+                <div className={styles.addConvenio}>
+                    <button onClick={toggleFormVisibility} className={styles.toggleButton}>
+                        {formVisible ? 'Cancelar' : 'Associar Convênio'}
                     </button>
-                    <h1>Detalhes do Médico</h1>
-                </header>
-                <p>
-                    <strong>Nome:</strong> {medico.nome}
-                </p>
-                <p>
-                    <strong>CRM:</strong> {medico.crm}
-                </p>
-                <p>
-                    <strong>Especialidade:</strong> {especialidade}
-                </p>
 
-                <div className={styles.box1}>
-                    <h2>Convênios Associados</h2>
-                    <div className={styles.addConvenio}>
-                        <button onClick={toggleFormVisibility} className={styles.toggleButton}>
-                            {formVisible ? 'Cancelar' : 'Associar Convênio'}
-                        </button>
-
-                        {/* Formulário de associar convênio */}
-                        {formVisible && (
-                            <div className={styles.addConvenio}>
-                                <h3>Associar Convênio</h3>
-                                <select
-                                    value={novoConvenio.convenioId}
-                                    onChange={(e) =>
-                                        setNovoConvenio((prev) => ({ ...prev, convenioId: e.target.value }))
-                                    }
-                                >
-                                    <option value="">Selecione o Convênio</option>
-                                    {convenios.map((convenio) => (
-                                        <option key={convenio.id} value={convenio.id}>
-                                            {convenio.nome}
-                                        </option>
-                                    ))}
-                                </select>
-                                <input
-                                    type="number"
-                                    value={novoConvenio.limite}
-                                    onChange={(e) =>
-                                        setNovoConvenio((prev) => ({ ...prev, limite: Number(e.target.value) }))
-                                    }
-                                    placeholder="Limite Mensal"
-                                />
-                                <button onClick={handleAdicionarConvenio}>Adicionar</button>
-                            </div>
-                        )}
-                        {relacoes.length > 0 && (
-                            <div className={styles.tabelaWrapper}>
-                                <table className={styles.responsiveTable}>
-                                    <thead>
-                                        <tr>
-                                            <th>Convênio</th>
-                                            <th>Limite Mensal</th>
-                                            <th>Ações</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {relacoes.map((rel) => (
-                                            <tr key={rel.id}>
-                                                <td>{rel.nomeConvenio}</td>
-                                                <td>
-                                                    {editandoLimite === rel.convenioId ? (
-                                                        <input
-                                                            type="number"
-                                                            value={limiteEditado ?? rel.limiteMensal}
-                                                            onChange={(e) =>
-                                                                setLimiteEditado(Number(e.target.value))
-                                                            }
-                                                        />
-                                                    ) : (
-                                                        rel.limiteMensal
-                                                    )}
-                                                </td>
-                                                <td>
-                                                    {editandoLimite === rel.convenioId ? (
-                                                        <button
-                                                            onClick={() =>
-                                                                handleEditarLimite(rel.convenioId, limiteEditado ?? rel.limiteMensal)
-                                                            }
-                                                        >
-                                                            Salvar
-                                                        </button>
-                                                    ) : (
-                                                        <button
-                                                            onClick={() => {
-                                                                setEditandoLimite(rel.convenioId);
-                                                                setLimiteEditado(rel.limiteMensal);
-                                                            }}
-                                                        >
-                                                            Editar
-                                                        </button>
-                                                    )}
+                    {/* Formulário de associar convênio */}
+                    {formVisible && (
+                        <div className={styles.addConvenio}>
+                            <h3>Associar Convênio</h3>
+                            <select
+                                value={novoConvenio.convenioId}
+                                onChange={(e) =>
+                                    setNovoConvenio((prev) => ({ ...prev, convenioId: e.target.value }))
+                                }
+                            >
+                                <option value="">Selecione o Convênio</option>
+                                {convenios.map((convenio) => (
+                                    <option key={convenio.id} value={convenio.id}>
+                                        {convenio.nome}
+                                    </option>
+                                ))}
+                            </select>
+                            <input
+                                type="number"
+                                value={novoConvenio.limite}
+                                onChange={(e) =>
+                                    setNovoConvenio((prev) => ({ ...prev, limite: Number(e.target.value) }))
+                                }
+                                placeholder="Limite Mensal"
+                            />
+                            <button onClick={handleAdicionarConvenio}>Adicionar</button>
+                        </div>
+                    )}
+                    {relacoes.length > 0 && (
+                        <div className={styles.tabelaWrapper}>
+                            <table className={styles.responsiveTable}>
+                                <thead>
+                                    <tr>
+                                        <th>Convênio</th>
+                                        <th>Limite Mensal</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {relacoes.map((rel) => (
+                                        <tr key={rel.id}>
+                                            <td>{rel.nomeConvenio}</td>
+                                            <td>
+                                                {editandoLimite === rel.convenioId ? (
+                                                    <input
+                                                        type="number"
+                                                        value={limiteEditado ?? rel.limiteMensal}
+                                                        onChange={(e) =>
+                                                            setLimiteEditado(Number(e.target.value))
+                                                        }
+                                                    />
+                                                ) : (
+                                                    rel.limiteMensal
+                                                )}
+                                            </td>
+                                            <td>
+                                                {editandoLimite === rel.convenioId ? (
                                                     <button
-                                                        className={styles.deleteButton}
-                                                        onClick={() => handleExcluirRelacao(rel.convenioId)}
+                                                        onClick={() =>
+                                                            handleEditarLimite(rel.convenioId, limiteEditado ?? rel.limiteMensal)
+                                                        }
                                                     >
-                                                        Excluir
+                                                        Salvar
                                                     </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
-                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => {
+                                                            setEditandoLimite(rel.convenioId);
+                                                            setLimiteEditado(rel.limiteMensal);
+                                                        }}
+                                                    >
+                                                        Editar
+                                                    </button>
+                                                )}
+                                                <button
+                                                    className={styles.deleteButton}
+                                                    onClick={() => handleExcluirRelacao(rel.convenioId)}
+                                                >
+                                                    Excluir
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </div>
-                <Disponibilidade id={id} />
             </div>
+            <Disponibilidade id={id} />
         </div>
     );
 };

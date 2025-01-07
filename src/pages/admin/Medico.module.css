@@ -1,72 +1,72 @@
 .container {
     padding: 20px;
-  }
-  
-  .formGroup {
+}
+
+.formGroup {
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
     max-width: 400px;
-  }
-  
-  .responsiveTable {
+}
+
+.responsiveTable {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-  }
-  
-  .responsiveTable th,
-  .responsiveTable td {
+}
+
+.responsiveTable th,
+.responsiveTable td {
     padding: 12px 15px;
     text-align: left;
     border: 1px solid #ddd;
-  }
+}
 
-  .responsiveTable td small {
+.responsiveTable td small {
     color: #555;
-  }
-  
-  .responsiveTable th {
+}
+
+.responsiveTable th {
     background-color: #f4f4f4;
     color: #333;
-  }
-  
-  .responsiveTable tr:nth-child(even) {
+}
+
+.responsiveTable tr:nth-child(even) {
     background-color: #f9f9f9;
-  }
-  
-  .responsiveTable tr:hover {
+}
+
+.responsiveTable tr:hover {
     background-color: #f1f1f1;
-  }
-  
-  button {
+}
+
+button {
     padding: 5px 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-  }
-  
-  .detalhesBtn {
+}
+
+.detalhesBtn {
     background-color: #007bff !important;
     color: white;
     margin-right: 5px;
-  }
-  
-  .detalhesBtn:hover {
+}
+
+.detalhesBtn:hover {
     background-color: #0056b3 !important;
-  }
-  
-  .excluirBtn {
+}
+
+.excluirBtn {
     background-color: #dc3545;
     color: white;
-  }
-  
-  .excluirBtn:hover {
+}
+
+.excluirBtn:hover {
     background-color: #a71d2a;
-  }
-  
-  /* src/pages/Medico.module.css */
+}
+
+/* src/pages/Medico.module.css */
 
 .novoMedicoButton {
     background-color: #3498db;
@@ -76,27 +76,27 @@
     border-radius: 5px;
     cursor: pointer;
     margin-top: 20px;
-  }
-  
-  .novoMedicoButton:hover {
+}
+
+.novoMedicoButton:hover {
     background-color: #2980b9;
-  }
-  
-  .formGroup {
+}
+
+.formGroup {
     margin-top: 20px;
-  }
-  
-  .formGroup input,
-  .formGroup select {
+}
+
+.formGroup input,
+.formGroup select {
     margin: 5px 0;
     padding: 10px;
     width: 100%;
     max-width: 400px;
     border-radius: 5px;
     border: 1px solid #ccc;
-  }
-  
-  .formGroup button {
+}
+
+.formGroup button {
     background-color: #2ecc71;
     color: white;
     padding: 10px 20px;
@@ -104,66 +104,68 @@
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
-  }
-  
-  .formGroup button:hover {
+}
+
+.formGroup button:hover {
     background-color: #27ae60;
-  }
-  
-  .responsiveTable {
+}
+
+.responsiveTable {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-  }
-  
-  .responsiveTable th,
-  .responsiveTable td {
+}
+
+.responsiveTable th,
+.responsiveTable td {
     padding: 12px 15px;
     text-align: left;
     border: 1px solid #ddd;
-  }
-  
-  .responsiveTable th {
+}
+
+.responsiveTable th {
     background-color: #f4f4f4;
     color: #333;
-  }
-  
-  .responsiveTable tr:nth-child(even) {
+}
+
+.responsiveTable tr:nth-child(even) {
     background-color: #f9f9f9;
-  }
-  
-  .responsiveTable tr:hover {
+}
+
+.responsiveTable tr:hover {
     background-color: #f1f1f1;
-  }
-  
-  .detalhesBtn,
-  .excluirBtn {
+}
+
+.detalhesBtn,
+.excluirBtn {
     background-color: #e74c3c;
     color: white;
     border: none;
     padding: 8px 12px;
     border-radius: 4px;
     cursor: pointer;
-  }
-  
-  .detalhesBtn:hover,
-  .excluirBtn:hover {
-    background-color: #c0392b;
-  }
+}
 
-  .tabelaWrapper {
+.detalhesBtn:hover,
+.excluirBtn:hover {
+    background-color: #c0392b;
+}
+
+.tabelaWrapper {
     margin-top: 20px;
-    overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
+    overflow-x: auto;
+    /* Permite rolagem horizontal em telas pequenas */
     width: 100%;
     overflow-y: hidden;
-  }
-  
-    
-  /* Estilos responsivos */
-  @media (max-width: 600px) {
-    .responsiveTable th, .tabela td {
-      font-size: 14px;
-      padding: 10px;
+}
+
+
+/* Estilos responsivos */
+@media (max-width: 600px) {
+
+    .responsiveTable th,
+    .tabela td {
+        font-size: 14px;
+        padding: 10px;
     }
-  }
-  
+}
