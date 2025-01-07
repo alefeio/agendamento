@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
- 
+
 import { db } from '../../../firebaseConfig';
 import styles from './Coonvenio.module.css'; // Importando o CSS
 
@@ -67,14 +67,14 @@ const Convenio: React.FC = () => {
   return (
     <div>
       <h2>Convênios</h2>
-      
-      <button 
+
+      <button
         onClick={() => setMostrarFormulario((prev) => !prev)} // Alterna a visibilidade do formulário
         className={styles.novoConvenioButton}
       >
         Adicionar Convênio
       </button>
-      
+
       {mostrarFormulario && (
         <div>
           <h3>Adicionar Novo Convênio</h3>
@@ -91,29 +91,33 @@ const Convenio: React.FC = () => {
       )}
 
       <div className={styles.tabelaWrapper}>
-        <table className={styles.tabela}>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {convenios.map((convenio) => (
-              <tr key={convenio.id}>
-                <td>{convenio.nome}</td>
-                <td>
-                  <button
-                    className={styles.deleteButton}
-                    onClick={() => handleExcluirConvenio(convenio.id)}
-                  >
-                    Excluir
-                  </button>
-                </td>
+        {convenios.length === 0 ? (
+          <p>Nenhum convênio encontrado.</p>
+        ) : (
+          <table className={styles.tabela}>
+            <thead>
+              <tr>
+                <th>Nome {convenios.length}</th>
+                <th>Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {convenios.map((convenio) => (
+                <tr key={convenio.id}>
+                  <td>{convenio.nome}</td>
+                  <td>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => handleExcluirConvenio(convenio.id)}
+                    >
+                      Excluir
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

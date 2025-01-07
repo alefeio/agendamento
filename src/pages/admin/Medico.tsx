@@ -132,44 +132,48 @@ const Medico: React.FC = () => {
             )}
 
             <div className={styles.tabelaWrapper}>
-                <table className={styles.responsiveTable}>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>CRM</th>
-                            <th>Especialidade</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {medicos.map((medico) => {
-                            const especialidadeNome =
-                                especialidades.find((esp) => esp.id === medico.especialidadeId)?.nome || 'Desconhecida';
-                            return (
-                                <tr key={medico.id}>
-                                    <td>{medico.nome}</td>
-                                    <td>{medico.crm}</td>
-                                    <td>{especialidadeNome}</td>
-                                    <td>
-                                        <button
-                                            onClick={() => handleVerDetalhes(medico.id)}
-                                            className={styles.detalhesBtn}
-                                            title="Ver detalhes"
-                                        >
-                                            🔍
-                                        </button>
-                                        <button
-                                            onClick={() => handleExcluirMedico(medico.id)}
-                                            className={styles.excluirBtn}
-                                        >
-                                            Excluir
-                                        </button>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
+                {medicos.length === 0 ? (
+                    <p>Nenhum médico encontrado.</p>
+                ) : (
+                    <table className={styles.responsiveTable}>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CRM</th>
+                                <th>Especialidade</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {medicos.map((medico) => {
+                                const especialidadeNome =
+                                    especialidades.find((esp) => esp.id === medico.especialidadeId)?.nome || 'Desconhecida';
+                                return (
+                                    <tr key={medico.id}>
+                                        <td>{medico.nome}</td>
+                                        <td>{medico.crm}</td>
+                                        <td>{especialidadeNome}</td>
+                                        <td>
+                                            <button
+                                                onClick={() => handleVerDetalhes(medico.id)}
+                                                className={styles.detalhesBtn}
+                                                title="Ver detalhes"
+                                            >
+                                                🔍
+                                            </button>
+                                            <button
+                                                onClick={() => handleExcluirMedico(medico.id)}
+                                                className={styles.excluirBtn}
+                                            >
+                                                Excluir
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                )}
             </div>
         </div>
     );

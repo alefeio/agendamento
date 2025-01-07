@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
- 
+
 import { db } from '../../../firebaseConfig';
 import styles from './Especialidade.module.css'; // Importando o CSS
 
@@ -68,14 +68,14 @@ const Especialidade: React.FC = () => {
   return (
     <div>
       <h2>Especialidades</h2>
-      
-      <button 
+
+      <button
         onClick={() => setMostrarFormulario((prev) => !prev)}
         className={styles.novaEspecialidadeButton}
       >
         Adicionar Especialidade
       </button>
-      
+
       {mostrarFormulario && (
         <div>
           <h3>Adicionar Nova Especialidade</h3>
@@ -92,29 +92,33 @@ const Especialidade: React.FC = () => {
       )}
 
       <div className={styles.tabelaWrapper}>
-        <table className={styles.tabela}>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {especialidades.map((especialidade) => (
-              <tr key={especialidade.id}>
-                <td>{especialidade.nome}</td>
-                <td>
-                  <button
-                    className={styles.deleteButton}
-                    onClick={() => handleExcluirEspecialidade(especialidade.id)}
-                  >
-                    Excluir
-                  </button>
-                </td>
+        {especialidades.length === 0 ? (
+          <p>Nenhuma especialidade encontrado.</p>
+        ) : (
+          <table className={styles.tabela}>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {especialidades.map((especialidade) => (
+                <tr key={especialidade.id}>
+                  <td>{especialidade.nome}</td>
+                  <td>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => handleExcluirEspecialidade(especialidade.id)}
+                    >
+                      Excluir
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
