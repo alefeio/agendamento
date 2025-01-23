@@ -5,64 +5,92 @@ import { db } from '../../firebaseConfig';
 import { useAgendamento } from '../context/AgendamentoContext';
 import styles from './Especialidade.module.css';
 
-interface Especialidade {
+interface Categoria {
     id: string;
     nome: string;
 }
 
+interface Subcategoria {
+    id: string;
+    nome: string;
+    categoriaId: string;
+}
+
 const Especialidade: React.FC = () => {
-    const [especialidades, setEspecialidades] = useState<Especialidade[]>([]);
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
+    const [subcategorias, setSubcategorias] = useState<Subcategoria[]>([]);
+    const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const { agendamentoData, setAgendamentoData } = useAgendamento();
 
     useEffect(() => {
-        const fetchEspecialidadesComMedicos = async () => {
+        const fetchCategorias = async () => {
             try {
-                const especialidadesRef = collection(db, 'especialidades');
-                const snapshotEspecialidades = await getDocs(especialidadesRef);
+                const categoriasRef = collection(db, 'categorias');
+                const snapshotCategorias = await getDocs(categoriasRef);
 
-                const listaEspecialidades = snapshotEspecialidades.docs.map((doc) => ({
+                const listaCategorias = snapshotCategorias.docs.map((doc) => ({
                     id: doc.id,
                     nome: doc.data().nome,
                 }));
 
-                // Filtrar especialidades com médicos
-                const especialidadesComMedicos = [];
-                for (const especialidade of listaEspecialidades) {
-                    const medicosRef = collection(db, 'medicos');
-                    const queryMedicos = query(
-                        medicosRef,
-                        where('especialidadeId', '==', especialidade.id)
-                    );
-                    const snapshotMedicos = await getDocs(queryMedicos);
-
-                    if (!snapshotMedicos.empty) {
-                        especialidadesComMedicos.push(especialidade);
-                    }
-                }
-
-                setEspecialidades(especialidadesComMedicos);
+                setCategorias(listaCategorias);
                 setIsLoading(false);
             } catch (err) {
                 console.error(err);
-                setError('Erro ao carregar especialidades. Tente novamente.');
+                setError('Erro ao carregar categorias. Tente novamente.');
                 setIsLoading(false);
             }
         };
 
-        fetchEspecialidadesComMedicos();
+        fetchCategorias();
     }, []);
 
-    const handleEspecialidadeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const especialidadeId = e.target.value;
-        const especialidadeSelecionada = especialidades.find(
-            (especialidade) => especialidade.id === especialidadeId
-        );
+    useEffect(() => {
+        const fetchSubcategorias = async () => {
+            if (!categoriaSelecionada) return;
 
+            try {
+                const subcategoriasRef = collection(db, 'subcategorias');
+                const querySubcategorias = query(
+                    subcategoriasRef,
+                    where('categoriaId', '==', categoriaSelecionada)
+                );
+                const snapshotSubcategorias = await getDocs(querySubcategorias);
+
+                const listaSubcategorias = snapshotSubcategorias.docs.map((doc) => ({
+                    id: doc.id,
+                    nome: doc.data().nome,
+                    categoriaId: doc.data().categoriaId,
+                }));
+
+                setSubcategorias(listaSubcategorias);
+            } catch (err) {
+                console.error(err);
+                setError('Erro ao carregar subcategorias. Tente novamente.');
+            }
+        };
+
+        fetchSubcategorias();
+    }, [categoriaSelecionada]);
+
+    const handleCategoriaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const categoriaId = e.target.value;
+        setCategoriaSelecionada(categoriaId);
+        setSubcategorias([]); // Resetar subcategorias ao mudar a categoria
         setAgendamentoData((prevData) => ({
             ...prevData,
-            especialidade: especialidadeSelecionada!,
+            categoria: categorias.find((cat) => cat.id === categoriaId) || null,
+            subcategoria: null,
+        }));
+    };
+
+    const handleSubcategoriaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const subcategoriaId = e.target.value;
+        setAgendamentoData((prevData) => ({
+            ...prevData,
+            subcategoria: subcategorias.find((sub) => sub.id === subcategoriaId) || null,
         }));
     };
 
@@ -71,28 +99,51 @@ const Especialidade: React.FC = () => {
             <h1 className={styles.title}>Especialidade</h1>
 
             {isLoading ? (
-                <p className={styles.loading}>Carregando especialidades...</p>
+                <p className={styles.loading}>Carregando categorias...</p>
             ) : error ? (
                 <p className={styles.error}>{error}</p>
             ) : (
-                <div className={styles.selectWrapper}>
-                    <label htmlFor="especialidade" className={styles.label}>
-                        Escolha a Especialidade:
-                    </label>
-                    <select
-                        id="especialidade"
-                        value={agendamentoData.especialidade?.id || ''}
-                        onChange={handleEspecialidadeChange}
-                        className={styles.select}
-                    >
-                        <option value="">Selecione uma especialidade</option>
-                        {especialidades.map((especialidade) => (
-                            <option key={especialidade.id} value={especialidade.id}>
-                                {especialidade.nome}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <>
+                    <div className={styles.selectWrapper}>
+                        <label htmlFor="categoria" className={styles.label}>
+                            Escolha a Categoria:
+                        </label>
+                        <select
+                            id="categoria"
+                            value={categoriaSelecionada}
+                            onChange={handleCategoriaChange}
+                            className={styles.select}
+                        >
+                            <option value="">Selecione uma categoria</option>
+                            {categorias.map((categoria) => (
+                                <option key={categoria.id} value={categoria.id}>
+                                    {categoria.nome}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {categoriaSelecionada && (
+                        <div className={styles.selectWrapper}>
+                            <label htmlFor="subcategoria" className={styles.label}>
+                                Escolha a Subcategoria:
+                            </label>
+                            <select
+                                id="subcategoria"
+                                value={agendamentoData.subcategoria?.id || ''}
+                                onChange={handleSubcategoriaChange}
+                                className={styles.select}
+                            >
+                                <option value="">Selecione uma subcategoria</option>
+                                {subcategorias.map((subcategoria) => (
+                                    <option key={subcategoria.id} value={subcategoria.id}>
+                                        {subcategoria.nome}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

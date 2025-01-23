@@ -1,4 +1,3 @@
-// src/pages/StepFlow.tsx
 import React, { useState } from 'react';
 import { useAgendamento } from '../context/AgendamentoContext';
 import DadosPessoais from './DadosPessoais';
@@ -35,10 +34,11 @@ const StepFlow: React.FC = () => {
                     <p><strong>CPF:</strong> {agendamentoData.dadosPessoais.cpf || 'Não preenchido'}</p>
                     <p><strong>Telefone:</strong> {agendamentoData.dadosPessoais.telefone || 'Não preenchido'}</p>
                     <p><strong>Endereço:</strong> {agendamentoData.dadosPessoais.endereco || 'Não preenchido'}</p>
-                    <p><strong>Especialidade:</strong> {agendamentoData.especialidade.nome || 'Não selecionado'}</p>
+                    <p><strong>Especialidade:</strong> {agendamentoData.categoria?.nome || 'Não selecionada'}</p>
+                    <p><strong>Tipo:</strong> {agendamentoData.subcategoria?.nome || 'Não selecionada'}</p>
                     <p><strong>Convênio:</strong> {agendamentoData.convenio?.nome || 'Não selecionado'}</p>
                     <p><strong>Médico:</strong> {agendamentoData.medico?.nome || 'Não selecionado'}</p>
-                    <p><strong>Data de Agendamento:</strong> Dia {agendamentoData.dataAgendamento.data && agendamentoData.dataAgendamento.data.split('-').reverse().join('/') || 'Não selecionado'} | Hora {agendamentoData.dataAgendamento.horario || 'Não selecionado'}</p>
+                    <p><strong>Data de Agendamento:</strong> {agendamentoData.dataHora || 'Não selecionada'}</p>
                 </div>
             </aside>
 
@@ -51,12 +51,11 @@ const StepFlow: React.FC = () => {
                     <button
                         onClick={handleNext}
                         disabled={
-                            (step === 1 && !agendamentoData.dadosPessoais.nome || !agendamentoData.dadosPessoais.cpf || !agendamentoData.dadosPessoais.email || !agendamentoData.dadosPessoais.endereco || !agendamentoData.dadosPessoais.telefone) ||
-                            (step === 2 && !agendamentoData.especialidade.nome) ||
+                            (step === 1 && (!agendamentoData.dadosPessoais.nome || !agendamentoData.dadosPessoais.cpf || !agendamentoData.dadosPessoais.email || !agendamentoData.dadosPessoais.endereco || !agendamentoData.dadosPessoais.telefone)) ||
+                            (step === 2 && (!agendamentoData.categoria || !agendamentoData.subcategoria)) ||
                             (step === 3 && !agendamentoData.convenio.nome) ||
                             (step === 4 && !agendamentoData.medico) ||
-                            (step === 5 && !agendamentoData.dataAgendamento) ||
-                            step === 2 && !agendamentoData.especialidade
+                            (step === 5 && !agendamentoData.dataHora)
                         }
                         style={{ visibility: step === steps.length ? 'hidden' : 'visible' }}
                     >Próximo</button>

@@ -10,10 +10,14 @@ interface AgendamentoData {
         telefone: string;
         endereco: string;
     };
-    especialidade: {
+    categoria: {
         id: string;
         nome: string;
-    };
+    } | null;
+    subcategoria: {
+        id: string;
+        nome: string;
+    } | null;
     convenio: {
         id: string;
         nome: string;
@@ -21,37 +25,40 @@ interface AgendamentoData {
     medico: {
         id: string;
         nome: string;
-    } | null;
-    dataAgendamento: {
-        data: string;
-        horario: string;
-    }
+    };
+    dataHora: string;
 }
 
-// Criando o contexto com um valor inicial vazio
-const AgendamentoContext = createContext<{
+interface AgendamentoContextProps {
     agendamentoData: AgendamentoData;
     setAgendamentoData: React.Dispatch<React.SetStateAction<AgendamentoData>>;
-}>({
-    agendamentoData: {
-        dadosPessoais: { nome: '', email: '', cpf: '', telefone: '', endereco: '' },
-        especialidade: { id: '', nome: '' },
-        convenio: { id: '', nome: '' },
-        medico: null,
-        dataAgendamento: { data: '', horario: '' },
-    },
-    setAgendamentoData: () => { },
-});
+}
 
-// Criando o provedor do contexto
+const defaultAgendamentoData: AgendamentoData = {
+    dadosPessoais: {
+        nome: '',
+        email: '',
+        cpf: '',
+        telefone: '',
+        endereco: '',
+    },
+    categoria: null,
+    subcategoria: null,
+    convenio: {
+        id: '',
+        nome: '',
+    },
+    medico: {
+        id: '',
+        nome: '',
+    },
+    dataHora: '',
+};
+
+const AgendamentoContext = createContext<AgendamentoContextProps | undefined>(undefined);
+
 export const AgendamentoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [agendamentoData, setAgendamentoData] = useState<AgendamentoData>({
-        dadosPessoais: { nome: '', email: '', cpf: '', telefone: '', endereco: '' },
-        especialidade: { id: '', nome: '' },
-        convenio: { id: '', nome: '' },
-        medico: null,
-        dataAgendamento: { data: '', horario: '' },
-    });
+    const [agendamentoData, setAgendamentoData] = useState<AgendamentoData>(defaultAgendamentoData);
 
     return (
         <AgendamentoContext.Provider value={{ agendamentoData, setAgendamentoData }}>
@@ -60,5 +67,10 @@ export const AgendamentoProvider: React.FC<{ children: ReactNode }> = ({ childre
     );
 };
 
-// Hook para acessar o contexto em outros componentes
-export const useAgendamento = () => useContext(AgendamentoContext);
+export const useAgendamento = (): AgendamentoContextProps => {
+    const context = useContext(AgendamentoContext);
+    if (!context) {
+        throw new Error('useAgendamento must be used within an AgendamentoProvider');
+    }
+    return context;
+};
