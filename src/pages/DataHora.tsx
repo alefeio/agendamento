@@ -7,6 +7,7 @@ import 'react-calendar/dist/Calendar.css';
 import styles from './DataHora.module.css';
 import { useAgendamento } from '../context/AgendamentoContext';
 import { useNavigate } from 'react-router-dom';
+import api from '../api';
 
 interface DisponibilidadeRotativa {
     diasCalendario: string[];
@@ -33,11 +34,47 @@ const DataHora: React.FC = () => {
     const [dataSelecionada, setDataSelecionada] = useState<Date>(new Date());
     const [horarioSelecionado, setHorarioSelecionado] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [response, setResponse] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const { agendamentoData, setAgendamentoData } = useAgendamento();
     const navigate = useNavigate();
 
     const feriados = ['2025-01-01', '2025-02-20', '2025-04-21', '2025-05-01'];
+
+    const handleAgendamento = async () => {
+        const token = "<SEU_TOKEN_AQUI>"; // Substitua por um token válido gerado previamente
+
+        const data = {
+            CodUnidade: "1",
+            CodEspecialidade: "1",
+            CodPlano: "1",
+            CodHorario: "1",
+            Data: "28/09/2020 08:00:00",
+            CodUsuario: "1",
+            CodColaborador: "1",
+            CodProcedimento: "1",
+            BitTelemedicina: "true",
+            Confirmada: "true",
+            TUSS: "123",
+        };
+
+        try {
+            const res = await api.post(
+                "/Agenda/ConfirmarAgendamento",
+                data,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            setResponse(JSON.stringify(res.data));
+        } catch (err: any) {
+            setError(err.response?.data || "Erro ao marcar agendamento");
+        }
+    };
 
     useEffect(() => {
         const carregarDisponibilidade = async () => {
@@ -178,66 +215,66 @@ const DataHora: React.FC = () => {
     const verificarDisponibilidadeRotativa = (data: Date) => {
         const dataFormatada = formatarData(data);
         const horariosDisponiveis = disponibilidadeRotativa?.horariosPorData[dataFormatada] || [];
-    
+
         // Remove horários já agendados ou que faltam menos de 30 minutos
         const horariosFuturos = horariosDisponiveis.filter((horario) => {
             const [hora, minuto] = horario.split(':').map(Number);
             const horarioDate = new Date(data);
             horarioDate.setHours(hora, minuto, 0, 0);
-    
+
             const agora = new Date();
             const meiaHoraAntes = new Date(agora.getTime() + 30 * 60 * 1000);
-    
+
             const horarioIndisponivel = horariosIndisponiveis.some(
                 (agendamento) => agendamento.dia === dataFormatada && agendamento.horario === horario
             );
-    
+
             return horarioDate > meiaHoraAntes && !horarioIndisponivel;
         });
-    
+
         // Ordena os horários em ordem crescente
         horariosFuturos.sort((a, b) => {
             const [horaA, minutoA] = a.split(':').map(Number);
             const [horaB, minutoB] = b.split(':').map(Number);
-    
+
             return horaA * 60 + minutoA - (horaB * 60 + minutoB);
         });
-    
+
         return horariosFuturos;
     };
-    
-    
+
+
     const obterHorariosFixa = (data: Date) => {
         const diaSemana = getDiaSemana(data);
         const horariosDisponiveis = disponibilidadeFixa?.diasDaSemanaComHorarios[diaSemana] || [];
-    
+
         // Remove horários já agendados ou que faltam menos de 30 minutos
         const horariosFuturos = horariosDisponiveis.filter((horario) => {
             const [hora, minuto] = horario.split(':').map(Number);
             const horarioDate = new Date(data);
             horarioDate.setHours(hora, minuto, 0, 0);
-    
+
             const agora = new Date();
             const meiaHoraAntes = new Date(agora.getTime() + 30 * 60 * 1000);
-    
+
             const horarioIndisponivel = horariosIndisponiveis.some(
                 (agendamento) => agendamento.dia === formatarData(data) && agendamento.horario === horario
             );
-    
+
             return horarioDate > meiaHoraAntes && !horarioIndisponivel;
         });
-    
+
         // Ordena os horários em ordem crescente
         horariosFuturos.sort((a, b) => {
             const [horaA, minutoA] = a.split(':').map(Number);
             const [horaB, minutoB] = b.split(':').map(Number);
-    
+
             return horaA * 60 + minutoA - (horaB * 60 + minutoB);
         });
-    
+
         return horariosFuturos;
     };
-    
+
 
     const getDiaSemana = (date: Date) => {
         const diasDaSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];

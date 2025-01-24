@@ -150,6 +150,10 @@ const Medico: React.FC = () => {
         });
     };
 
+    const handleVerDetalhes = (id: string) => {
+        navigate(`/medicos/${ id }`);
+    };
+
     return (
         <div>
             <h2>Médicos</h2>
@@ -245,6 +249,13 @@ const Medico: React.FC = () => {
                                         })}
                                     </td>
                                     <td>
+                                        <button
+                                            onClick={() => handleVerDetalhes(medico.id)}
+                                            className={styles.detalhesBtn}
+                                            title="Ver detalhes"
+                                        >
+                                            🔍
+                                        </button>
                                         <button
                                             onClick={() => handleEditarMedico(medico)}
                                             className={styles.editarBtn}

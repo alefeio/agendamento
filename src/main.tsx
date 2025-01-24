@@ -32,8 +32,15 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/data-hora" element={<DataHora />} />
           <Route path="/painel-gestao" element={<PainelGestao />} />
           <Route path="/step-flow" element={<StepFlow />} />
-          <Route path="/medicos/:id" element={<DetalhesMedico />} />
           <Route path="/obrigado" element={<Obrigado />} />
+          <Route
+            path="/medicos/:id"
+            element={
+              <PrivateRoute>
+                <DetalhesMedico />
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/restrito"
             element={

@@ -1,7 +1,8 @@
 // src/pages/DadosPessoais.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAgendamento } from '../context/AgendamentoContext';
 import styles from './DadosPessoais.module.css';
+import api from '../api';
 
 const DadosPessoais: React.FC = () => {
     const { agendamentoData, setAgendamentoData } = useAgendamento();
@@ -18,6 +19,17 @@ const DadosPessoais: React.FC = () => {
         }));
     };
 
+    const teste = async () => {
+
+        try {
+            const res = await api.get('http://polls.apiblueprint.org/api/Especialidade/');
+
+            console.log('res', res);
+        } catch (err: any) {
+            console.error(err.response?.data || "Erro");
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const { nome, email, cpf, telefone, endereco } = agendamentoData.dadosPessoais;
@@ -28,6 +40,10 @@ const DadosPessoais: React.FC = () => {
             setFormValid(false);
         }
     };
+
+    useEffect(() => {
+        teste();
+    }, [])
 
     return (
         <div className={styles.contentWrapper}>
