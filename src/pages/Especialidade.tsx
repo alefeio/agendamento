@@ -36,6 +36,12 @@ const Especialidade: React.FC = () => {
                 }));
 
                 setCategorias(listaCategorias);
+
+                // Inicializa categoria selecionada com base no context
+                if (agendamentoData.categoria) {
+                    setCategoriaSelecionada(agendamentoData.categoria.id);
+                }
+
                 setIsLoading(false);
             } catch (err) {
                 console.error(err);
@@ -45,7 +51,7 @@ const Especialidade: React.FC = () => {
         };
 
         fetchCategorias();
-    }, []);
+    }, [agendamentoData.categoria]);
 
     useEffect(() => {
         const fetchSubcategorias = async () => {
@@ -66,6 +72,19 @@ const Especialidade: React.FC = () => {
                 }));
 
                 setSubcategorias(listaSubcategorias);
+
+                // Inicializa subcategoria selecionada com base no context
+                if (agendamentoData.subcategoria) {
+                    const subcategoriaSalva = listaSubcategorias.find(
+                        (sub) => sub.id === agendamentoData.subcategoria.id
+                    );
+                    if (subcategoriaSalva) {
+                        setAgendamentoData((prevData) => ({
+                            ...prevData,
+                            subcategoria: subcategoriaSalva,
+                        }));
+                    }
+                }
             } catch (err) {
                 console.error(err);
                 setError('Erro ao carregar subcategorias. Tente novamente.');
@@ -73,7 +92,7 @@ const Especialidade: React.FC = () => {
         };
 
         fetchSubcategorias();
-    }, [categoriaSelecionada]);
+    }, [categoriaSelecionada, agendamentoData.subcategoria]);
 
     const handleCategoriaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const categoriaId = e.target.value;

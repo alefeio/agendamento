@@ -29,13 +29,16 @@ const DetalhesMedico: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [medico, setMedico] = useState<Medico | null>(null);
-    const [especialidade, setEspecialidade] = useState<string>('');
     const [convenios, setConvenios] = useState<Convenio[]>([]);
     const [relacoes, setRelacoes] = useState<DetalhesMedico[]>([]);
     const [novoConvenio, setNovoConvenio] = useState({ convenioId: '', limite: 0 });
     const [editandoLimite, setEditandoLimite] = useState<string | null>(null);
     const [limiteEditado, setLimiteEditado] = useState<number | null>(null);
-    const [formVisible, setFormVisible] = useState(false); // Novo estado para controlar a visibilidade do formulário
+    const [formVisible, setFormVisible] = useState(false);
+    const [especialidades, setEspecialidades] = useState<
+        { categoria: string; subcategorias: string[] }[]
+    >([]);
+
 
     const goToRestrito = () => {
         navigate('/restrito?tab=medicos'); // Navega para a URL com a query string
@@ -44,6 +47,8 @@ const DetalhesMedico: React.FC = () => {
     useEffect(() => {
         const fetchMedico = async () => {
             if (!id) return;
+
+            // Busca os dados do médico
             const medicoRef = doc(db, 'medicos', id);
             const medicoSnap = await getDoc(medicoRef);
 
@@ -51,13 +56,41 @@ const DetalhesMedico: React.FC = () => {
                 const medicoData = medicoSnap.data() as Medico;
                 setMedico(medicoData);
 
-                const especialidadeRef = doc(db, 'especialidades', medicoData.especialidadeId);
-                const especialidadeSnap = await getDoc(especialidadeRef);
-                if (especialidadeSnap.exists()) {
-                    setEspecialidade(especialidadeSnap.data().nome);
-                }
+                // Busca categorias e subcategorias
+                const categoriasRef = collection(db, 'categorias');
+                const subcategoriasRef = collection(db, 'subcategorias');
+
+                const categoriasSnap = await getDocs(categoriasRef);
+                const subcategoriasSnap = await getDocs(subcategoriasRef);
+
+                // Mapeia os nomes das categorias e subcategorias
+                const categorias = categoriasSnap.docs.reduce(
+                    (acc, doc) => ({ ...acc, [doc.id]: doc.data().nome }),
+                    {} as { [key: string]: string }
+                );
+
+                const subcategorias = subcategoriasSnap.docs.reduce(
+                    (acc, doc) => ({ ...acc, [doc.id]: doc.data().nome }),
+                    {} as { [key: string]: string }
+                );
+
+                // Mapeia as especialidades do médico para exibição
+                const especialidadesFormatadas = medicoData.especialidades.map((especialidade) => {
+                    const categoriaNome = categorias[especialidade.categoriaId] || 'Categoria Desconhecida';
+                    const subcategoriasNomes = especialidade.subcategorias
+                        .map((subcategoriaId) => subcategorias[subcategoriaId])
+                        .filter((nome) => !!nome);
+
+                    return {
+                        categoria: categoriaNome,
+                        subcategorias: subcategoriasNomes,
+                    };
+                });
+
+                setEspecialidades(especialidadesFormatadas);
             }
         };
+
         fetchMedico();
     }, [id]);
 
@@ -176,7 +209,21 @@ const DetalhesMedico: React.FC = () => {
                 <strong>CRM:</strong> {medico.crm}
             </p>
             <p>
-                <strong>Especialidade:</strong> {especialidade}
+                <strong>Especialidades:</strong>
+                {especialidades.length > 0 ? (
+                    <p>
+                        {especialidades.map((especialidade, index) => (
+                            <>
+                                <small key={index}>
+                                    <strong>{especialidade.categoria}:</strong> {especialidade.subcategorias.join(', ')}
+                                </small>
+                                <br />
+                            </>
+                        ))}
+                    </p>
+                ) : (
+                    'Nenhuma especialidade encontrada.'
+                )}
             </p>
 
             <div className={styles.box1}>

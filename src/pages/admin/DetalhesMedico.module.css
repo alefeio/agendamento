@@ -22,7 +22,7 @@
 .box header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     margin-bottom: 20px;
     /* Reduzido para um espaçamento mais compacto */
 }
@@ -185,35 +185,43 @@ li button:hover {
 
 .tabelaWrapper {
     margin-top: 20px;
-    overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
+    overflow-x: auto;
+    /* Permite rolagem horizontal em telas pequenas */
     width: 100%;
     overflow-y: hidden;
-  }
+}
+
+.box header h1 {
+    font-size: 24px;
+    color: #333;
+}
+
+
 
 .responsiveTable {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-  }
-  
-  .responsiveTable th,
-  .responsiveTable td {
+}
+
+.responsiveTable th,
+.responsiveTable td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
-  }
-  
-  .responsiveTable th {
+}
+
+.responsiveTable th {
     background-color: #f4f4f4;
-  }
-  
-  .responsiveTable tbody tr:nth-child(even) {
+}
+
+.responsiveTable tbody tr:nth-child(even) {
     background-color: #f9f9f9;
-  }
-  
-  .responsiveTable tbody tr:hover {
+}
+
+.responsiveTable tbody tr:hover {
     background-color: #f1f1f1;
-  }
+}
 
 /* Ajuste responsivo */
 @media (max-width: 768px) {

@@ -20,8 +20,25 @@ const StepFlow: React.FC = () => {
         { id: 5, component: <DataHora />, label: 'Data e Hora' },
     ];
 
-    const handleNext = () => setStep((prevStep) => Math.min(prevStep + 1, steps.length));
-    const handlePrevious = () => setStep((prevStep) => Math.max(prevStep - 1, 1));
+    const handleNext = () => {
+        setStep((prevStep) => {
+            // Se o step atual for 3 (Convênio) e a categoria for "Exame", pule o Médico
+            if (prevStep === 3 && agendamentoData.categoria?.nome === 'Exame') {
+                return Math.min(prevStep + 2, steps.length);
+            }
+            return Math.min(prevStep + 1, steps.length);
+        });
+    };
+
+    const handlePrevious = () => {
+        setStep((prevStep) => {
+            // Se o step atual for 5 (Data e Hora) e a categoria for "Exame", volte para Convênio
+            if (prevStep === 5 && agendamentoData.categoria?.nome === 'Exame') {
+                return Math.max(prevStep - 2, 1);
+            }
+            return Math.max(prevStep - 1, 1);
+        });
+    };
 
     return (
         <div className={styles.pageWrapper}>
@@ -45,7 +62,11 @@ const StepFlow: React.FC = () => {
             <main className={styles.stepWrapper}>
                 {steps.find((s) => s.id === step)?.component}
                 <div className={styles.buttonWrapper}>
-                    <button onClick={handlePrevious} disabled={step === 1} style={{ visibility: step === 1 ? 'hidden' : 'visible' }}>
+                    <button
+                        onClick={handlePrevious}
+                        disabled={step === 1}
+                        style={{ visibility: step === 1 ? 'hidden' : 'visible' }}
+                    >
                         Anterior
                     </button>
                     <button
@@ -53,12 +74,14 @@ const StepFlow: React.FC = () => {
                         disabled={
                             (step === 1 && (!agendamentoData.dadosPessoais.nome || !agendamentoData.dadosPessoais.cpf || !agendamentoData.dadosPessoais.email || !agendamentoData.dadosPessoais.endereco || !agendamentoData.dadosPessoais.telefone)) ||
                             (step === 2 && (!agendamentoData.categoria || !agendamentoData.subcategoria)) ||
-                            (step === 3 && !agendamentoData.convenio.nome) ||
-                            (step === 4 && !agendamentoData.medico) ||
+                            // (step === 3 && !agendamentoData.convenio?.nome) ||
+                            (step === 4 && agendamentoData.categoria?.nome === 'Consulta' && !agendamentoData.medico) ||
                             (step === 5 && !agendamentoData.dataHora)
                         }
                         style={{ visibility: step === steps.length ? 'hidden' : 'visible' }}
-                    >Próximo</button>
+                    >
+                        Próximo
+                    </button>
                 </div>
             </main>
         </div>

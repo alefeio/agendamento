@@ -69,7 +69,7 @@ const Convenio: React.FC = () => {
                         onChange={handleConvenioChange}
                         className={styles.select}
                     >
-                        <option value="">Selecione um convênio</option>
+                        <option value="Sem convênio">Sem convênio</option>
                         {convenios.map((convenio) => (
                             <option key={convenio.id} value={convenio.id}>
                                 {convenio.nome}

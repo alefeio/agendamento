@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { doc, collection, getDocs, deleteDoc, setDoc, addDoc } from 'firebase/firestore';
- 
+
 import { db } from '../../firebaseConfig';
 import styles from './Disponibilidade.module.css';
 
@@ -9,21 +9,22 @@ interface Disponibilidad {
     tipo: 'fixa' | 'rotativa';
     medicoId: string;
     diasSemana?: boolean[];
-    horarios?: { horario: string; limite: number }[];
+    horarios?: { horario: string; limite: number }[]; // Atualizado para incluir limite em fixa
     diasCalendario?: string[];
-    horariosPorData?: { [key: string]: { horario: string; limite: number }[] };
-    diasDaSemanaComHorarios?: { [key: string]: { horario: string; limite: number }[] };
+    horariosPorData?: { [key: string]: { horario: string; limite: number }[] }; // Ajustado para rotativa
+    diasDaSemanaComHorarios?: { [key: string]: { horario: string; limite: number }[] }; // Ajustado para fixa
 }
 
 export const Disponibilidade = ({ id }: { id: any }) => {
     const [tipoAgenda, setTipoAgenda] = useState<'fixa' | 'rotativa' | ''>('');
     const [diasSemana, setDiasSemana] = useState<boolean[]>(new Array(7).fill(false));
-    const [horarios, setHorarios] = useState<{ horario: string; limite: number }[]>([]);
+    const [horarios, setHorarios] = useState<string[]>([]);
     const [diasCalendario, setDiasCalendario] = useState<string[]>([]);
     const [horarioSelecionado, setHorarioSelecionado] = useState<string>('');
-    const [limiteSelecionado, setLimiteSelecionado] = useState<number>(1);
     const [horariosPorData, setHorariosPorData] = useState<{ [key: string]: { horario: string; limite: number }[] }>({});
     const [disponibilidades, setDisponibilidades] = useState<Disponibilidad[]>([]);
+    const [limiteSelecionado, setLimiteSelecionado] = useState<number>(1); // Para o limite de atendimento do horário atual
+
 
     const fetchDisp = async () => {
         if (!id) return;
@@ -42,7 +43,7 @@ export const Disponibilidade = ({ id }: { id: any }) => {
                         .reduce((acc, key) => {
                             acc[key] = data.horariosPorData![key];
                             return acc;
-                        }, {} as Record<string, { horario: string; limite: number }[]>);
+                        }, {} as Record<string, string[]>);
 
                     data.horariosPorData = sortedHorariosPorData;
                 }
@@ -58,15 +59,14 @@ export const Disponibilidade = ({ id }: { id: any }) => {
         fetchDisp();
     }, [id]);
 
-    const handleAdicionarHorario = () => {
-        if (horarioSelecionado && !horarios.some((h) => h.horario === horarioSelecionado)) {
-            const novosHorarios = [...horarios, { horario: horarioSelecionado, limite: limiteSelecionado }];
-            setHorarios(novosHorarios);
-            setHorarioSelecionado('');
-            setLimiteSelecionado(1);
-        } else {
-            alert('Este horário já foi adicionado ou não foi selecionado!');
-        }
+    const handleExcluirDisponibilidade = async (disponibilidadeId: string) => {
+        const confirmacao = window.confirm('Tem certeza que deseja excluir essa disponibilidade?');
+        if (!confirmacao) return;
+
+        const disponibilidadeDoc = doc(db, 'disponibilidade', disponibilidadeId);
+        await deleteDoc(disponibilidadeDoc);
+
+        setDisponibilidades((prev) => prev.filter((d) => d.id !== disponibilidadeId));
     };
 
     const salvarDisponibilidade = async () => {
@@ -110,7 +110,11 @@ export const Disponibilidade = ({ id }: { id: any }) => {
                 setHorarios([]);
                 alert('Disponibilidade fixa atualizada com sucesso!');
             } else {
-                disponib.diasDaSemanaComHorarios = {};
+                const disponib: Disponibilidad = {
+                    tipo: 'fixa',
+                    medicoId: id,
+                    diasDaSemanaComHorarios: {},
+                };
 
                 diasSemana.forEach((isSelected, index) => {
                     if (isSelected) {
@@ -128,25 +132,174 @@ export const Disponibilidade = ({ id }: { id: any }) => {
             }
         }
 
+        else if (tipoAgenda === 'rotativa') {
+            const disponibilidadeExistente = disponibilidades.find(
+                (disponibilidade) => disponibilidade.medicoId === id && disponibilidade.tipo === 'rotativa'
+            );
+
+            if (disponibilidadeExistente) {
+                const diasCalendarioAtualizados = [
+                    ...disponibilidadeExistente.diasCalendario!,
+                    ...diasCalendario,
+                ];
+                const horariosAtualizados = { ...disponibilidadeExistente.horariosPorData };
+
+                diasCalendario.forEach((data) => {
+                    if (horariosPorData[data]) {
+                        horariosAtualizados[data] = [
+                            ...(horariosAtualizados[data] || []),
+                            ...horariosPorData[data],
+                        ];
+                    }
+                });
+
+                const diasCalendarioOrdenados = diasCalendarioAtualizados.sort(
+                    (a, b) => new Date(a).getTime() - new Date(b).getTime()
+                );
+
+                await setDoc(doc(db, 'disponibilidade', disponibilidadeExistente.id!), {
+                    ...disponibilidadeExistente,
+                    diasCalendario: diasCalendarioOrdenados,
+                    horariosPorData: horariosAtualizados,
+                });
+
+                setDiasCalendario([]);
+                setHorarios([]);
+                alert('Disponibilidade rotativa atualizada com sucesso!');
+            } else {
+                const disponib: Disponibilidad = {
+                    tipo: 'rotativa',
+                    medicoId: id,
+                    diasCalendario: diasCalendario.sort(
+                        (a, b) => new Date(a).getTime() - new Date(b).getTime()
+                    ),
+                    horariosPorData: horariosPorData,
+                };
+
+                const disponibilidadeRef = collection(db, 'disponibilidade');
+                await addDoc(disponibilidadeRef, disponib);
+
+                setDiasCalendario([]);
+                setHorarios([]);
+                alert('Disponibilidade rotativa salva com sucesso!');
+            }
+        }
+
         fetchDisp();
         setTipoAgenda('');
     };
+
+    // Função para alternar entre os formulários
+    const toggleForm = (agendaTipo: 'fixa' | 'rotativa') => {
+        setTipoAgenda(tipoAgenda === agendaTipo ? '' : agendaTipo); // Alterna entre mostrar e esconder o formulário
+    };
+
+    const handleExcluirDia = async (disponibilidadeId: string, dia: string) => {
+        const confirmacao = window.confirm('Tem certeza que deseja excluir esse dia da semana?');
+        if (!confirmacao) return;
+
+        const disponibilidadeExistente = disponibilidades.find((d) => d.id === disponibilidadeId);
+        if (disponibilidadeExistente) {
+            const novosDias = { ...disponibilidadeExistente.diasDaSemanaComHorarios };
+            delete novosDias[dia];
+
+            // Atualiza no Firestore
+            await setDoc(doc(db, 'disponibilidade', disponibilidadeId), {
+                ...disponibilidadeExistente,
+                diasDaSemanaComHorarios: novosDias,
+            });
+
+            // Atualiza o estado local
+            setDisponibilidades((prev) =>
+                prev.map((d) =>
+                    d.id === disponibilidadeId
+                        ? { ...d, diasDaSemanaComHorarios: novosDias }
+                        : d
+                )
+            );
+        }
+    };
+
+    const handleExcluirDataRotativa = async (disponibilidadeId: string, data: string) => {
+        const confirmacao = window.confirm('Tem certeza que deseja excluir essa data?');
+        if (!confirmacao) return;
+
+        const disponibilidadeExistente = disponibilidades.find((d) => d.id === disponibilidadeId);
+        if (disponibilidadeExistente) {
+            // Remove a data do calendário
+            const novosDiasCalendario = disponibilidadeExistente.diasCalendario?.filter((d) => d !== data) || [];
+            const novosHorariosPorData = { ...disponibilidadeExistente.horariosPorData };
+            delete novosHorariosPorData[data];
+
+            // Atualiza no Firestore
+            await setDoc(doc(db, 'disponibilidade', disponibilidadeId), {
+                ...disponibilidadeExistente,
+                diasCalendario: novosDiasCalendario,
+                horariosPorData: novosHorariosPorData,
+            });
+
+            // Atualiza o estado local
+            setDisponibilidades((prev) =>
+                prev.map((d) =>
+                    d.id === disponibilidadeExistente.id
+                        ? { ...d, diasCalendario: novosDiasCalendario, horariosPorData: novosHorariosPorData }
+                        : d
+                )
+            );
+        }
+    };
+
+    const handleAdicionarHorarioParaData = (data: string) => {
+        if (horarioSelecionado) {
+            setHorariosPorData((prev) => {
+                const novosHorarios = prev[data] || [];
+                if (!novosHorarios.some((h) => h.horario === horarioSelecionado)) {
+                    const novosHorariosOrdenados = [
+                        ...novosHorarios,
+                        { horario: horarioSelecionado, limite: limiteSelecionado },
+                    ];
+                    return { ...prev, [data]: novosHorariosOrdenados };
+                }
+                return prev;
+            });
+            setHorarioSelecionado('');
+            setLimiteSelecionado(1);
+        } else {
+            alert('Selecione um horário para adicionar!');
+        }
+    };
+
+    const handleRemoverData = (data: string) => {
+        setDiasCalendario(diasCalendario.filter((d) => d !== data));
+        setHorariosPorData((prev) => {
+            const { [data]: _, ...rest } = prev;
+            console.log(_);
+            return rest;
+        });
+    };
+
 
     return (
         <div className={styles.box1}>
             <h2>Disponibilidade</h2>
             <div className={styles.addDisponibilidade}>
                 <button
-                    onClick={() => setTipoAgenda(tipoAgenda === 'fixa' ? '' : 'fixa')}
+                    onClick={() => toggleForm('fixa')}
                     disabled={disponibilidades.some((d) => d.tipo === 'rotativa')}
                 >
                     Adicionar Agenda Fixa
+                </button>
+                <button
+                    onClick={() => toggleForm('rotativa')}
+                    disabled={disponibilidades.some((d) => d.tipo === 'fixa')}
+                >
+                    Adicionar Agenda Rotativa
                 </button>
 
                 {tipoAgenda === 'fixa' && (
                     <div>
                         <h4>Selecione os dias da semana e horários</h4>
-                        <div className={styles.diaSemana}>
+                        <div className={styles.diasCalendarioWrapper}>
                             {['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'].map((dia, index) => (
                                 <div key={index}>
                                     <input
@@ -169,14 +322,31 @@ export const Disponibilidade = ({ id }: { id: any }) => {
                                 value={horarioSelecionado}
                                 onChange={(e) => setHorarioSelecionado(e.target.value)}
                             />
+                            <small>Capacidade de atendimento:</small>
                             <input
                                 type="number"
                                 min="1"
                                 value={limiteSelecionado}
                                 onChange={(e) => setLimiteSelecionado(Number(e.target.value))}
-                                placeholder="Limite"
+                                placeholder="Limite de Atendimento"
                             />
-                            <button onClick={handleAdicionarHorario}>Incluir horário</button>
+                            <button
+                                onClick={() => {
+                                    if (horarioSelecionado && !horarios.some((h) => h.horario === horarioSelecionado)) {
+                                        const novosHorarios = [
+                                            ...horarios,
+                                            { horario: horarioSelecionado, limite: limiteSelecionado },
+                                        ];
+                                        setHorarios(novosHorarios);
+                                        setHorarioSelecionado('');
+                                        setLimiteSelecionado(1);
+                                    } else {
+                                        alert('Este horário já foi adicionado ou não foi selecionado!');
+                                    }
+                                }}
+                            >
+                                Incluir horário
+                            </button>
                             <button onClick={() => setHorarios([])}>Limpar</button>
                             <ul>
                                 {horarios.map((horario, index) => (
@@ -189,11 +359,151 @@ export const Disponibilidade = ({ id }: { id: any }) => {
                     </div>
                 )}
 
+                {tipoAgenda === 'rotativa' && (
+                    <div className={styles.diasCalendarioWrapper}>
+                        <h4>Selecione os dias disponíveis</h4>
+                        <input
+                            type="date"
+                            onChange={(e) => setDiasCalendario([...diasCalendario, e.target.value])}
+                        />
+                        <ul>
+                            {diasCalendario.sort().map((data, index) => (
+                                <li key={index}>
+                                    {data}
+                                    <button
+                                        className={styles.deleteButton}
+                                        onClick={() => handleRemoverData(data)}
+                                    >
+                                        Remover
+                                    </button>
+                                    <div>
+                                        <input
+                                            type="time"
+                                            value={horarioSelecionado}
+                                            onChange={(e) => setHorarioSelecionado(e.target.value)}
+                                        />
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            value={limiteSelecionado}
+                                            onChange={(e) => setLimiteSelecionado(Number(e.target.value))}
+                                            placeholder="Limite de Atendimento"
+                                        />
+                                        <button
+                                            onClick={() => handleAdicionarHorarioParaData(data)}
+                                            className={styles.button}
+                                        >
+                                            Adicionar Horário
+                                        </button>
+                                        <ul>
+                                            {horariosPorData[data]?.map((horario, i) => (
+                                                <li key={i}>
+                                                    {horario.horario} - Limite: {horario.limite}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
                 {tipoAgenda !== '' && (
                     <button className={styles.saveButton} onClick={salvarDisponibilidade}>
                         Salvar Disponibilidade
                     </button>
                 )}
+
+                {/* Mostrar todas as disponibilidades existentes */}
+                <h3>Datas disponíveis</h3>
+                <div>
+                    {disponibilidades.length > 0 ? (
+                        disponibilidades.map((disponibilidade) => (
+                            <div key={disponibilidade.id}>
+                                <h4>{disponibilidade.tipo === 'fixa' ? 'Agenda Fixa' : 'Agenda Rotativa'}</h4>
+                                {disponibilidade.tipo === 'fixa' ? (
+                                    <div className={styles.tabelaWrapper}>
+                                        <table className={styles.responsiveTable}>
+                                            <thead>
+                                                <tr>
+                                                    <th>Dia</th>
+                                                    <th>Horários</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {Object.entries(disponibilidade.diasDaSemanaComHorarios!)
+                                                    .sort(([diaA], [diaB]) => {
+                                                        const ordemDias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+                                                        return ordemDias.indexOf(diaA) - ordemDias.indexOf(diaB);
+                                                    })
+                                                    .map(([dia, horarios]) => (
+                                                        <tr key={dia}>
+                                                            <td>{dia}</td>
+                                                            <td>
+                                                                {horarios
+                                                                    .map((h) => `${h.horario} - Limite: ${h.limite}`)
+                                                                    .join(', ')}
+                                                            </td>
+                                                            <td>
+                                                                <button
+                                                                    className={styles.deleteButton}
+                                                                    onClick={() => handleExcluirDia(disponibilidade.id!, dia)}
+                                                                >
+                                                                    Excluir Dia
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <div className={styles.tabelaWrapper}>
+                                        <table className={styles.responsiveTable}>
+                                            <thead>
+                                                <tr>
+                                                    <th>Data</th>
+                                                    <th>Horários</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {Object.entries(disponibilidade.horariosPorData!).map(([data, horarios]) => (
+                                                    <tr key={data}>
+                                                        <td>{data}</td>
+                                                        <td>
+                                                            {horarios
+                                                                .map((h) => `${h.horario} - Limite: ${h.limite}`)
+                                                                .join(', ')}
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                className={styles.deleteButton}
+                                                                onClick={() => handleExcluirDataRotativa(disponibilidade.id!, data)}
+                                                            >
+                                                                Excluir Data
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                                <button
+                                    className={styles.deleteButton}
+                                    onClick={() => handleExcluirDisponibilidade(disponibilidade.id!)}
+                                >
+                                    Excluir Disponibilidades
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <p>Nenhuma disponibilidade encontrada.</p>
+                    )}
+                </div>
             </div>
         </div>
     );
