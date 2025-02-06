@@ -47,7 +47,7 @@ const DadosPessoais: React.FC = () => {
 
     return (
         <div className={styles.contentWrapper}>
-            <h1 className={styles.title}>Dados Pessoais</h1>
+            <h1 className={styles.title}>Dados Pessoaiss</h1>
             {!formValid && <p className={styles.error}>Preencha todos os campos obrigatórios!</p>}
             <form className={styles.formWrapper} onSubmit={handleSubmit}>
                 <div className={styles.inputGroup}>
