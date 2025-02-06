@@ -1,4 +1,3 @@
-// src/pages/Medico.tsx
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
@@ -9,7 +8,10 @@ import styles from './Medico.module.css';
 interface Medico {
     id: string;
     nome: string;
-    especialidadeId: string;
+    especialidades: {
+        categoriaId: string;
+        subcategorias: string[];
+    }[];
     convenios: { id: string; nome: string; limiteMensal: number; atingiuLimite: boolean }[];
 }
 
@@ -22,7 +24,7 @@ const Medico: React.FC = () => {
     useEffect(() => {
         const fetchMedicos = async () => {
             try {
-                if (!agendamentoData.convenio?.id || !agendamentoData.especialidade?.id) {
+                if (!agendamentoData.convenio?.id || !agendamentoData.categoria?.id || !agendamentoData.subcategoria?.id) {
                     setMedicos([]);
                     setIsLoading(false);
                     return;
@@ -69,19 +71,21 @@ const Medico: React.FC = () => {
                         return {
                             id: medicoId,
                             nome: medicoData.nome,
-                            especialidadeId: medicoData.especialidadeId,
+                            especialidades: medicoData.especialidades || [],
                             convenios,
                         };
                     })
                 );
 
-                const medicosFiltrados = listaMedicos.filter(
-                    (medico) =>
-                        medico.especialidadeId === agendamentoData.especialidade.id &&
-                        medico.convenios.some(
-                            (convenio) =>
-                                convenio.id === agendamentoData.convenio.id && !convenio.atingiuLimite
-                        )
+                const medicosFiltrados = listaMedicos.filter((medico) =>
+                    medico.especialidades.some((especialidade: { categoriaId: string; subcategorias: string[] }) =>
+                        especialidade.categoriaId === agendamentoData.categoria?.id &&
+                        especialidade.subcategorias.includes(agendamentoData.subcategoria?.id || '')
+                    ) &&
+                    medico.convenios.some(
+                        (convenio) =>
+                            convenio.id === agendamentoData.convenio.id && !convenio.atingiuLimite
+                    )
                 );
 
                 setMedicos(medicosFiltrados);
@@ -94,7 +98,7 @@ const Medico: React.FC = () => {
         };
 
         fetchMedicos();
-    }, [agendamentoData.convenio, agendamentoData.especialidade]);
+    }, [agendamentoData.convenio, agendamentoData.categoria, agendamentoData.subcategoria]);
 
     const handleMedicoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const medicoId = e.target.value;
@@ -114,7 +118,7 @@ const Medico: React.FC = () => {
             ) : error ? (
                 <p className={styles.error}>{error}</p>
             ) : medicos.length === 0 ? (
-                <p className={styles.noMedicos}>Nenhum médico disponível.</p>
+                <p className={styles.noMedicos}>Nenhum médico disponível para esta especialidade.</p>
             ) : (
                 <div className={styles.selectWrapper}>
                     <label htmlFor="medico" className={styles.label}>

@@ -18,7 +18,7 @@ interface Disponibilidad {
 export const Disponibilidade = ({ id }: { id: any }) => {
     const [tipoAgenda, setTipoAgenda] = useState<'fixa' | 'rotativa' | ''>('');
     const [diasSemana, setDiasSemana] = useState<boolean[]>(new Array(7).fill(false));
-    const [horarios, setHorarios] = useState<string[]>([]);
+    const [horarios, setHorarios] = useState<{ horario: string; limite: number }[]>([]);
     const [diasCalendario, setDiasCalendario] = useState<string[]>([]);
     const [horarioSelecionado, setHorarioSelecionado] = useState<string>('');
     const [horariosPorData, setHorariosPorData] = useState<{ [key: string]: { horario: string; limite: number }[] }>({});
@@ -38,12 +38,15 @@ export const Disponibilidade = ({ id }: { id: any }) => {
 
                 // Ordenar as datas da agenda rotativa, se existir
                 if (data.tipo === 'rotativa' && data.horariosPorData) {
-                    const sortedHorariosPorData = Object.keys(data.horariosPorData)
-                        .sort((a, b) => new Date(a).getTime() - new Date(b).getTime()) // Ordena as datas
+                    const sortedHorariosPorData = Object.keys(data.horariosPorData!)
+                        .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
                         .reduce((acc, key) => {
-                            acc[key] = data.horariosPorData![key];
+                            acc[key] = data.horariosPorData![key].map(horarioObj => ({
+                                horario: horarioObj.horario,
+                                limite: horarioObj.limite,
+                            })); // Mantém a estrutura correta
                             return acc;
-                        }, {} as Record<string, string[]>);
+                        }, {} as { [key: string]: { horario: string; limite: number }[] });
 
                     data.horariosPorData = sortedHorariosPorData;
                 }
@@ -72,11 +75,6 @@ export const Disponibilidade = ({ id }: { id: any }) => {
     const salvarDisponibilidade = async () => {
         if (!id || tipoAgenda === '') return;
 
-        const disponib: Disponibilidad = {
-            tipo: tipoAgenda,
-            medicoId: id,
-        };
-
         if (tipoAgenda === 'fixa') {
             const disponibilidadeExistente = disponibilidades.find(
                 (disponibilidade) => disponibilidade.medicoId === id && disponibilidade.tipo === 'fixa'
@@ -90,14 +88,16 @@ export const Disponibilidade = ({ id }: { id: any }) => {
                 diasSemana.forEach((isSelected, index) => {
                     if (isSelected) {
                         const dia = ordemDias[index];
-                        if (diasDaSemanaAtualizados[dia]) {
-                            diasDaSemanaAtualizados[dia] = [
-                                ...diasDaSemanaAtualizados[dia],
-                                ...horarios,
-                            ];
-                        } else {
-                            diasDaSemanaAtualizados[dia] = horarios;
+                        if (!diasDaSemanaAtualizados[dia]) {
+                            diasDaSemanaAtualizados[dia] = []; // Inicializa o array corretamente
                         }
+                        diasDaSemanaAtualizados[dia] = [
+                            ...diasDaSemanaAtualizados[dia],
+                            ...horarios.map(horario => ({
+                                horario: typeof horario === 'string' ? horario : horario.horario, // Garante que seja string
+                                limite: horario.limite ?? 1 // Mantém o limite correto ou define um padrão
+                            }))
+                        ];
                     }
                 });
 
@@ -119,7 +119,23 @@ export const Disponibilidade = ({ id }: { id: any }) => {
                 diasSemana.forEach((isSelected, index) => {
                     if (isSelected) {
                         const dia = ordemDias[index];
-                        disponib.diasDaSemanaComHorarios![dia] = horarios;
+
+                        // Se a chave ainda não existe, inicializa um array vazio
+                        if (!disponib.diasDaSemanaComHorarios) {
+                            disponib.diasDaSemanaComHorarios = {};
+                        }
+                        if (!disponib.diasDaSemanaComHorarios[dia]) {
+                            disponib.diasDaSemanaComHorarios[dia] = [];
+                        }
+
+                        // Mapeia os horários corretamente, garantindo a estrutura esperada
+                        disponib.diasDaSemanaComHorarios[dia] = [
+                            ...disponib.diasDaSemanaComHorarios[dia], // Mantém horários já existentes
+                            ...horarios.map(horario => ({
+                                horario: typeof horario === 'string' ? horario : horario.horario, // Garante que seja string
+                                limite: typeof horario === 'object' && 'limite' in horario ? horario.limite : 1 // Mantém ou define um valor padrão
+                            }))
+                        ];
                     }
                 });
 

@@ -22,10 +22,7 @@ interface AgendamentoData {
         id: string;
         nome: string;
     };
-    medico: {
-        id: string;
-        nome: string;
-    };
+    medico: { id: string; nome: string; } | null;
     dataHora: string;
 }
 

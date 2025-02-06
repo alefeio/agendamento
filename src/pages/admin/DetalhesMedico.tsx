@@ -9,7 +9,10 @@ import { Disponibilidade } from '../../components/Disponibilidade';
 interface Medico {
     nome: string;
     crm: string;
-    especialidadeId: string;
+    especialidades: {
+        categoriaId: string;
+        subcategorias: string[];
+    }[];
 }
 
 interface Convenio {
@@ -47,52 +50,57 @@ const DetalhesMedico: React.FC = () => {
     useEffect(() => {
         const fetchMedico = async () => {
             if (!id) return;
-
+    
             // Busca os dados do médico
             const medicoRef = doc(db, 'medicos', id);
             const medicoSnap = await getDoc(medicoRef);
-
+    
             if (medicoSnap.exists()) {
                 const medicoData = medicoSnap.data() as Medico;
                 setMedico(medicoData);
-
+    
                 // Busca categorias e subcategorias
                 const categoriasRef = collection(db, 'categorias');
                 const subcategoriasRef = collection(db, 'subcategorias');
-
+    
                 const categoriasSnap = await getDocs(categoriasRef);
                 const subcategoriasSnap = await getDocs(subcategoriasRef);
-
+    
                 // Mapeia os nomes das categorias e subcategorias
                 const categorias = categoriasSnap.docs.reduce(
                     (acc, doc) => ({ ...acc, [doc.id]: doc.data().nome }),
                     {} as { [key: string]: string }
                 );
-
+    
                 const subcategorias = subcategoriasSnap.docs.reduce(
                     (acc, doc) => ({ ...acc, [doc.id]: doc.data().nome }),
                     {} as { [key: string]: string }
                 );
-
-                // Mapeia as especialidades do médico para exibição
-                const especialidadesFormatadas = medicoData.especialidades.map((especialidade) => {
-                    const categoriaNome = categorias[especialidade.categoriaId] || 'Categoria Desconhecida';
-                    const subcategoriasNomes = especialidade.subcategorias
-                        .map((subcategoriaId) => subcategorias[subcategoriaId])
-                        .filter((nome) => !!nome);
-
-                    return {
-                        categoria: categoriaNome,
-                        subcategorias: subcategoriasNomes,
-                    };
-                });
-
-                setEspecialidades(especialidadesFormatadas);
+    
+                // Verifica se o médico tem especialidades
+                if (medicoData.especialidades && Array.isArray(medicoData.especialidades)) {
+                    // Mapeia as especialidades do médico para exibição
+                    const especialidadesFormatadas = medicoData.especialidades.map((especialidade) => {
+                        const categoriaNome = categorias[especialidade.categoriaId] || 'Categoria Desconhecida';
+                        const subcategoriasNomes = especialidade.subcategorias
+                            .map((subcategoriaId) => subcategorias[subcategoriaId])
+                            .filter((nome) => !!nome);
+    
+                        return {
+                            categoria: categoriaNome,
+                            subcategorias: subcategoriasNomes,
+                        };
+                    });
+    
+                    setEspecialidades(especialidadesFormatadas);
+                } else {
+                    setEspecialidades([]);
+                }
             }
         };
-
+    
         fetchMedico();
-    }, [id]);
+    }, [id]);    
 
     useEffect(() => {
         const fetchConvenios = async () => {

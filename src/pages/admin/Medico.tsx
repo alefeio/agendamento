@@ -151,7 +151,7 @@ const Medico: React.FC = () => {
     };
 
     const handleVerDetalhes = (id: string) => {
-        navigate(`/medicos/${ id }`);
+        navigate(`/medicos/${id}`);
     };
 
     return (
@@ -160,11 +160,14 @@ const Medico: React.FC = () => {
 
             <button
                 onClick={() => {
-                    setMostrarFormulario((prev) => !prev);
-                    if (!prev) {
-                        setEditarMedicoId(null);
-                        setNovoMedico({ nome: '', crm: '', especialidades: [] });
-                    }
+                    setMostrarFormulario((prev) => {
+                        const novoEstado = !prev;
+                        if (!novoEstado) {
+                            setEditarMedicoId(null);
+                            setNovoMedico({ nome: '', crm: '', especialidades: [] });
+                        }
+                        return novoEstado;
+                    });
                 }}
                 className={styles.novoMedicoButton}
             >

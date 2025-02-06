@@ -76,7 +76,7 @@ const Especialidade: React.FC = () => {
                 // Inicializa subcategoria selecionada com base no context
                 if (agendamentoData.subcategoria) {
                     const subcategoriaSalva = listaSubcategorias.find(
-                        (sub) => sub.id === agendamentoData.subcategoria.id
+                        (sub) => sub.id === agendamentoData.subcategoria!.id
                     );
                     if (subcategoriaSalva) {
                         setAgendamentoData((prevData) => ({

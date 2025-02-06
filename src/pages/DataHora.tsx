@@ -7,7 +7,6 @@ import 'react-calendar/dist/Calendar.css';
 import styles from './DataHora.module.css';
 import { useAgendamento } from '../context/AgendamentoContext';
 import { useNavigate } from 'react-router-dom';
-import api from '../api';
 
 interface DisponibilidadeRotativa {
     diasCalendario: string[];
@@ -34,47 +33,11 @@ const DataHora: React.FC = () => {
     const [dataSelecionada, setDataSelecionada] = useState<Date>(new Date());
     const [horarioSelecionado, setHorarioSelecionado] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
-    const [response, setResponse] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
 
     const { agendamentoData, setAgendamentoData } = useAgendamento();
     const navigate = useNavigate();
 
     const feriados = ['2025-01-01', '2025-02-20', '2025-04-21', '2025-05-01'];
-
-    const handleAgendamento = async () => {
-        const token = "<SEU_TOKEN_AQUI>"; // Substitua por um token válido gerado previamente
-
-        const data = {
-            CodUnidade: "1",
-            CodEspecialidade: "1",
-            CodPlano: "1",
-            CodHorario: "1",
-            Data: "28/09/2020 08:00:00",
-            CodUsuario: "1",
-            CodColaborador: "1",
-            CodProcedimento: "1",
-            BitTelemedicina: "true",
-            Confirmada: "true",
-            TUSS: "123",
-        };
-
-        try {
-            const res = await api.post(
-                "/Agenda/ConfirmarAgendamento",
-                data,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setResponse(JSON.stringify(res.data));
-        } catch (err: any) {
-            setError(err.response?.data || "Erro ao marcar agendamento");
-        }
-    };
 
     useEffect(() => {
         const carregarDisponibilidade = async () => {
@@ -135,10 +98,7 @@ const DataHora: React.FC = () => {
         setDataSelecionada(data);
         setAgendamentoData((prev) => ({
             ...prev,
-            dataAgendamento: {
-                ...prev.dataAgendamento,
-                data: formatarData(data), // Atualiza apenas a data
-            },
+            dataHora: formatarData(data), // Atualiza apenas a data no campo correto
         }));
     };
 
@@ -146,10 +106,7 @@ const DataHora: React.FC = () => {
         setHorarioSelecionado(horario);
         setAgendamentoData((prev) => ({
             ...prev,
-            dataAgendamento: {
-                ...prev.dataAgendamento,
-                horario, // Atualiza apenas o horário
-            },
+            dataHora: horario, // Atualiza apenas o horário no campo correto
         }));
     };
 
@@ -310,7 +267,10 @@ const DataHora: React.FC = () => {
             mes: mes,
             ano: ano,
             horario: horarioSelecionado,
-            especialidadeId: agendamentoData.especialidade,
+            especialidadeId: agendamentoData.categoria?.id, // Categoria (Especialidade)
+            especialidadeNome: agendamentoData.categoria?.nome, // Nome da Categoria
+            subespecialidadeId: agendamentoData.subcategoria?.id, // Subcategoria (Subespecialidade)
+            subespecialidadeNome: agendamentoData.subcategoria?.nome, // Nome da Subcategoria
             convenioId: agendamentoData.convenio.id,
             medicoId: agendamentoData.medico?.id,
             dataCadastro, // Incluindo o campo dataCadastro
