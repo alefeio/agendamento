@@ -1,9 +1,12 @@
 {
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "/index.html"
-      }
-    ]
-  }
-  
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/api/token",
+      "destination": "http://177.159.112.242:9091/versatilis/Token"
+    }
+  ]
+}

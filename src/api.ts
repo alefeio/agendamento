@@ -6,7 +6,7 @@ const api = axios.create({
 
 api.interceptors.request.use(async (config) => {
     if (!config.headers.Authorization) {
-        const response = await axios.post('http://177.159.112.242:9091/versatilis/Token', {
+        const response = await axios.post('/api/token', {
             username: '1cce8244-ee5e-477c-a0fb-64186980ef6d',
             password: 'api@versatilis',
             grant_type: 'password',
