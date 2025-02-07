@@ -22,7 +22,7 @@ const DadosPessoais: React.FC = () => {
     const teste = async () => {
 
         try {
-            const res = await api.get('/api/Especialidade/');
+            const res = await api.get('api/Especialidade/');
 
             console.log('res', res);
         } catch (err: any) {
