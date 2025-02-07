@@ -22,7 +22,7 @@ const DadosPessoais: React.FC = () => {
     const teste = async () => {
 
         try {
-            const res = await api.get('http://polls.apiblueprint.org/api/Especialidade/');
+            const res = await api.get('/api/Especialidade/');
 
             console.log('res', res);
         } catch (err: any) {
@@ -47,7 +47,7 @@ const DadosPessoais: React.FC = () => {
 
     return (
         <div className={styles.contentWrapper}>
-            <h1 className={styles.title}>Dados Pessoaiss</h1>
+            <h1 className={styles.title}>Dados Pessoais</h1>
             {!formValid && <p className={styles.error}>Preencha todos os campos obrigatórios!</p>}
             <form className={styles.formWrapper} onSubmit={handleSubmit}>
                 <div className={styles.inputGroup}>
