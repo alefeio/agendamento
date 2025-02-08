@@ -79,16 +79,16 @@ const Medico: React.FC = () => {
 
                 // **Filtragem dos médicos**
                 const medicosFiltrados = listaMedicos.filter((medico) =>
-                    medico.especialidades.some((especialidade) =>
+                    medico.especialidades.some((especialidade: { categoriaId: string; subcategorias: string[] }) =>
                         especialidade.categoriaId === agendamentoData.categoria?.id &&
                         especialidade.subcategorias.includes(agendamentoData.subcategoria?.id || '')
                     ) &&
                     // Se um convênio estiver selecionado, filtra os médicos que atendem ao convênio
                     (!agendamentoData.convenio?.id ||
-                        medico.convenios.some(
-                            (convenio) =>
-                                convenio.id === agendamentoData.convenio?.id && !convenio.atingiuLimite
-                        ))
+                        medico.convenios.some((convenio) =>
+                            convenio.id === agendamentoData.convenio?.id && !convenio.atingiuLimite
+                        )
+                    )
                 );
 
                 setMedicos(medicosFiltrados);
