@@ -141,6 +141,9 @@ const DataHora: React.FC = () => {
         return horariosDisponiveis.map(h => h.horario);
     };
 
+    const horariosDisponiveis = verificarHorariosDisponiveis(dataSelecionada);
+    const nenhumHorarioDisponivel = horariosDisponiveis.length === 0;
+
     const salvarAgendamento = async () => {
         if (!horarioSelecionado) {
             alert('Por favor, selecione um horário.');
@@ -187,9 +190,6 @@ const DataHora: React.FC = () => {
         }
     };
 
-    const horariosDisponiveis = verificarHorariosDisponiveis(dataSelecionada);
-    const nenhumHorarioDisponivel = horariosDisponiveis.length === 0;
-
     return (
         <div className={styles.contentWrapper}>
             <h1 className={styles.title}>Data e Hora</h1>
@@ -216,6 +216,7 @@ const DataHora: React.FC = () => {
                         {horario}
                     </button>
                 ))}
+                {nenhumHorarioDisponivel && <p>Nenhum horário disponível para este dia.</p>}
             </div>
 
             <button className={styles.saveButton} onClick={salvarAgendamento} disabled={isSaving || !horarioSelecionado}>
