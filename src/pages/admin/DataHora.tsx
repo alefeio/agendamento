@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
- 
+
 import { db } from '../../../firebaseConfig';
-import styles from './Agendamentos.module.css'; // Importando o CSS
+import styles from './Agendamentos.module.css';
 
 interface DadosPessoais {
   nome: string;
@@ -12,7 +12,12 @@ interface DadosPessoais {
   endereco: string;
 }
 
-interface Especialidade {
+interface Categoria {
+  id: string;
+  nome: string;
+}
+
+interface Subcategoria {
   id: string;
   nome: string;
 }
@@ -30,12 +35,13 @@ interface Medico {
 interface Agendamento {
   id: string;
   dadosPessoais: DadosPessoais;
-  especialidade: Especialidade;
+  categoria: Categoria | null;
+  subcategoria: Subcategoria | null;
   convenio: Convenio;
   medico: Medico | null;
   data: string;
   horario: string;
-  dataCadastro: string; // Adicionado campo para a data de cadastro
+  dataCadastro: string;
 }
 
 const Agendamentos: React.FC = () => {
@@ -48,36 +54,40 @@ const Agendamentos: React.FC = () => {
       try {
         const agendamentosRef = collection(db, 'agendamentos');
         const snapshot = await getDocs(agendamentosRef);
-        const listaAgendamentos = snapshot.docs
-          .map((doc) => {
-            const data = doc.data();
+        const listaAgendamentos = snapshot.docs.map((doc) => {
+          const data = doc.data();
 
-            return {
-              id: doc.id,
-              dadosPessoais: {
-                nome: data?.dadosPessoais?.nome || 'Nome não informado',
-                email: data?.dadosPessoais?.email || 'Email não informado',
-                cpf: data?.dadosPessoais?.cpf || '',
-                telefone: data?.dadosPessoais?.telefone || '',
-                endereco: data?.dadosPessoais?.endereco || '',
-              },
-              especialidade: data?.especialidade || 'Especialidade não informada',
-              convenio: {
-                id: data?.convenio?.id || '',
-                nome: data?.convenio?.nome || 'Convênio não informado',
-              },
-              medico: data?.medico || null,
-              data: data?.data || '',
-              horario: data?.horario || '',
-              dataCadastro: data?.dataCadastro || 'Data não informada', // Data de cadastro
-            };
-          }) as Agendamento[];
+          return {
+            id: doc.id,
+            dadosPessoais: {
+              nome: data?.dadosPessoais?.nome || 'Nome não informado',
+              email: data?.dadosPessoais?.email || 'Email não informado',
+              cpf: data?.dadosPessoais?.cpf || 'CPF não informado',
+              telefone: data?.dadosPessoais?.telefone || 'Telefone não informado',
+              endereco: data?.dadosPessoais?.endereco || 'Endereço não informado',
+            },
+            categoria: data?.categoria && typeof data.categoria === 'object'
+              ? data.categoria
+              : { id: '', nome: 'Categoria não informada' },
+            subcategoria: data?.subcategoria && typeof data.subcategoria === 'object'
+              ? data.subcategoria
+              : { id: '', nome: 'Subcategoria não informada' },
+            convenio: data?.convenio && typeof data.convenio === 'object'
+              ? data.convenio
+              : { id: '', nome: 'Convênio não informado' },
+            medico: data?.medico && typeof data.medico === 'object'
+              ? data.medico
+              : { id: '', nome: 'Médico não informado' },
+            data: data?.data || 'Data não informada',
+            horario: data?.horario || 'Horário não informado',
+            dataCadastro: data?.dataCadastro || 'Data não informada',
+          };
+        }) as Agendamento[];
 
-        // Ordenar agendamentos por dataCadastro em ordem decrescente
         listaAgendamentos.sort((a, b) => {
           const dataA = new Date(a.dataCadastro).getTime();
           const dataB = new Date(b.dataCadastro).getTime();
-          return dataB - dataA; // Decrescente
+          return dataB - dataA; // Ordem decrescente
         });
 
         setAgendamentos(listaAgendamentos);
@@ -132,23 +142,32 @@ const Agendamentos: React.FC = () => {
               {agendamentos.map((agendamento) => (
                 <tr key={agendamento.id}>
                   <td>
-                    Nome: {agendamento.dadosPessoais.nome}<br />
-                    E-mail: {agendamento.dadosPessoais.email}<br />
-                    Telefone: {agendamento.dadosPessoais.telefone}<br />
-                    CPF: {agendamento.dadosPessoais.cpf}<br />
-                    End: {agendamento.dadosPessoais.endereco}<br />
-                    <small>Data Cadastro: {agendamento.dataCadastro}</small>
+                    <strong>Nome:</strong> {agendamento.dadosPessoais.nome}<br />
+                    <strong>E-mail:</strong> {agendamento.dadosPessoais.email}<br />
+                    <strong>Telefone:</strong> {agendamento.dadosPessoais.telefone}<br />
+                    <strong>CPF:</strong> {agendamento.dadosPessoais.cpf}<br />
+                    <strong>Endereço:</strong> {agendamento.dadosPessoais.endereco}<br />
+                    <small><strong>Data Cadastro:</strong> {agendamento.dataCadastro}</small>
                   </td>
-                  <td>{agendamento.especialidade.nome}</td>
+                  <td>
+                    <strong>Categoria:</strong> {agendamento.categoria?.nome || 'Categoria não informada'}<br />
+                    <strong>Subcategoria:</strong> {agendamento.subcategoria?.nome || 'Subcategoria não informada'}
+                  </td>
                   <td>{agendamento.convenio?.nome || 'Convênio não informado'}</td>
-                  <td>{agendamento.medico?.nome || 'Não informado'}</td>
+                  <td>{agendamento.medico?.nome || 'Médico não informado'}</td>
                   <td>{agendamento.data}</td>
                   <td>{agendamento.horario}</td>
                   <td>
-                    <button className={styles.confirmarButton} onClick={() => alert('Agendamento confirmado!')}>
+                    <button
+                      className={styles.confirmarButton}
+                      onClick={() => alert(`Agendamento de ${agendamento.dadosPessoais.nome} confirmado!`)}
+                    >
                       Confirmar
                     </button>
-                    <button className={styles.deleteButton} onClick={() => handleExcluirAgendamento(agendamento.id)}>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => handleExcluirAgendamento(agendamento.id)}
+                    >
                       Excluir
                     </button>
                   </td>

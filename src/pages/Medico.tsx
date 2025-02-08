@@ -24,7 +24,7 @@ const Medico: React.FC = () => {
     useEffect(() => {
         const fetchMedicos = async () => {
             try {
-                if (!agendamentoData.convenio?.id || !agendamentoData.categoria?.id || !agendamentoData.subcategoria?.id) {
+                if (!agendamentoData.categoria?.id || !agendamentoData.subcategoria?.id) {
                     setMedicos([]);
                     setIsLoading(false);
                     return;
@@ -77,15 +77,18 @@ const Medico: React.FC = () => {
                     })
                 );
 
+                // **Filtragem dos médicos**
                 const medicosFiltrados = listaMedicos.filter((medico) =>
-                    medico.especialidades.some((especialidade: { categoriaId: string; subcategorias: string[] }) =>
+                    medico.especialidades.some((especialidade) =>
                         especialidade.categoriaId === agendamentoData.categoria?.id &&
                         especialidade.subcategorias.includes(agendamentoData.subcategoria?.id || '')
                     ) &&
-                    medico.convenios.some(
-                        (convenio) =>
-                            convenio.id === agendamentoData.convenio.id && !convenio.atingiuLimite
-                    )
+                    // Se um convênio estiver selecionado, filtra os médicos que atendem ao convênio
+                    (!agendamentoData.convenio?.id ||
+                        medico.convenios.some(
+                            (convenio) =>
+                                convenio.id === agendamentoData.convenio?.id && !convenio.atingiuLimite
+                        ))
                 );
 
                 setMedicos(medicosFiltrados);

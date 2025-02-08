@@ -8,15 +8,20 @@ import styles from './DataHora.module.css';
 import { useAgendamento } from '../context/AgendamentoContext';
 import { useNavigate } from 'react-router-dom';
 
+interface Horario {
+    horario: string;
+    limite: number;
+}
+
 interface DisponibilidadeRotativa {
     diasCalendario: string[];
-    horariosPorData: { [key: string]: string[] };
+    horariosPorData: { [key: string]: Horario[] };
     medicoId: string;
     tipo: string;
 }
 
 interface DisponibilidadeFixa {
-    diasDaSemanaComHorarios: { [key: string]: string[] };
+    diasDaSemanaComHorarios: { [key: string]: Horario[] };
     medicoId: string;
     tipo: string;
 }
@@ -98,7 +103,7 @@ const DataHora: React.FC = () => {
         setDataSelecionada(data);
         setAgendamentoData((prev) => ({
             ...prev,
-            dataHora: formatarData(data), // Atualiza apenas a data no campo correto
+            dataHora: formatarData(data),
         }));
     };
 
@@ -106,136 +111,31 @@ const DataHora: React.FC = () => {
         setHorarioSelecionado(horario);
         setAgendamentoData((prev) => ({
             ...prev,
-            dataHora: horario, // Atualiza apenas o horário no campo correto
+            dataHora: horario,
         }));
     };
-
-    const isDiaIndisponivel = (date: Date) => {
-        const dataFormatada = formatarData(date);
-        const dataAtual = new Date();
-        const diaSemana = getDiaSemana(date);
-
-        // Verifica se a data é anterior ao dia atual
-        if (date < new Date(dataAtual.setHours(0, 0, 0, 0))) {
-            return true;
-        }
-
-        // Obtem horários disponíveis para o dia
-        const horariosRotativa = verificarDisponibilidadeRotativa(date);
-        const horariosFixa = obterHorariosFixa(date);
-
-        // Combina os horários das agendas rotativa e fixa
-        const todosHorariosDisponiveis = [...horariosRotativa, ...horariosFixa];
-
-        if (todosHorariosDisponiveis.length === 0) {
-            return true; // Não há horários disponíveis no dia
-        }
-
-        // Ordena os horários disponíveis para obter o último horário
-        todosHorariosDisponiveis.sort((a, b) => {
-            const [horaA, minutoA] = a.split(':').map(Number);
-            const [horaB, minutoB] = b.split(':').map(Number);
-            return horaA * 60 + minutoA - (horaB * 60 + minutoB);
-        });
-
-        const ultimoHorarioDisponivel = todosHorariosDisponiveis[todosHorariosDisponiveis.length - 1];
-
-        // Se for o dia atual, verifica se o último horário disponível já passou
-        if (formatarData(date) === formatarData(dataAtual)) {
-            const [hora, minuto] = ultimoHorarioDisponivel.split(':').map(Number);
-            const ultimoHorarioDate = new Date();
-            ultimoHorarioDate.setHours(hora, minuto, 0, 0);
-
-            if (ultimoHorarioDate <= dataAtual) {
-                return true; // Bloqueia o dia se o último horário já passou
-            }
-        }
-
-        // Verifica se o dia é feriado
-        if (feriados.includes(dataFormatada)) {
-            return true;
-        }
-
-        // Verifica disponibilidade para agenda rotativa
-        if (disponibilidadeRotativa && !disponibilidadeRotativa.diasCalendario.includes(dataFormatada)) {
-            return true;
-        }
-
-        // Verifica disponibilidade para agenda fixa
-        if (disponibilidadeFixa && !disponibilidadeFixa.diasDaSemanaComHorarios[diaSemana]) {
-            return true;
-        }
-
-        return false; // O dia está disponível
-    };
-
-    const verificarDisponibilidadeRotativa = (data: Date) => {
-        const dataFormatada = formatarData(data);
-        const horariosDisponiveis = disponibilidadeRotativa?.horariosPorData[dataFormatada] || [];
-
-        // Remove horários já agendados ou que faltam menos de 30 minutos
-        const horariosFuturos = horariosDisponiveis.filter((horario) => {
-            const [hora, minuto] = horario.split(':').map(Number);
-            const horarioDate = new Date(data);
-            horarioDate.setHours(hora, minuto, 0, 0);
-
-            const agora = new Date();
-            const meiaHoraAntes = new Date(agora.getTime() + 30 * 60 * 1000);
-
-            const horarioIndisponivel = horariosIndisponiveis.some(
-                (agendamento) => agendamento.dia === dataFormatada && agendamento.horario === horario
-            );
-
-            return horarioDate > meiaHoraAntes && !horarioIndisponivel;
-        });
-
-        // Ordena os horários em ordem crescente
-        horariosFuturos.sort((a, b) => {
-            const [horaA, minutoA] = a.split(':').map(Number);
-            const [horaB, minutoB] = b.split(':').map(Number);
-
-            return horaA * 60 + minutoA - (horaB * 60 + minutoB);
-        });
-
-        return horariosFuturos;
-    };
-
-
-    const obterHorariosFixa = (data: Date) => {
-        const diaSemana = getDiaSemana(data);
-        const horariosDisponiveis = disponibilidadeFixa?.diasDaSemanaComHorarios[diaSemana] || [];
-
-        // Remove horários já agendados ou que faltam menos de 30 minutos
-        const horariosFuturos = horariosDisponiveis.filter((horario) => {
-            const [hora, minuto] = horario.split(':').map(Number);
-            const horarioDate = new Date(data);
-            horarioDate.setHours(hora, minuto, 0, 0);
-
-            const agora = new Date();
-            const meiaHoraAntes = new Date(agora.getTime() + 30 * 60 * 1000);
-
-            const horarioIndisponivel = horariosIndisponiveis.some(
-                (agendamento) => agendamento.dia === formatarData(data) && agendamento.horario === horario
-            );
-
-            return horarioDate > meiaHoraAntes && !horarioIndisponivel;
-        });
-
-        // Ordena os horários em ordem crescente
-        horariosFuturos.sort((a, b) => {
-            const [horaA, minutoA] = a.split(':').map(Number);
-            const [horaB, minutoB] = b.split(':').map(Number);
-
-            return horaA * 60 + minutoA - (horaB * 60 + minutoB);
-        });
-
-        return horariosFuturos;
-    };
-
 
     const getDiaSemana = (date: Date) => {
         const diasDaSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
         return diasDaSemana[date.getDay()];
+    };
+
+    const verificarHorariosDisponiveis = (data: Date) => {
+        const dataFormatada = formatarData(data);
+        const diaSemana = getDiaSemana(data);
+
+        const horariosRotativa = disponibilidadeRotativa?.horariosPorData[dataFormatada] || [];
+        const horariosFixa = disponibilidadeFixa?.diasDaSemanaComHorarios[diaSemana] || [];
+
+        const horariosDisponiveis = [...horariosRotativa, ...horariosFixa].filter(({ horario, limite }) => {
+            const agendamentosParaHorario = horariosIndisponiveis.filter(
+                (h) => h.dia === dataFormatada && h.horario === horario
+            ).length;
+
+            return agendamentosParaHorario < limite; // Só exibe se não atingiu o limite
+        });
+
+        return horariosDisponiveis.map(h => h.horario);
     };
 
     const salvarAgendamento = async () => {
@@ -250,7 +150,6 @@ const DataHora: React.FC = () => {
         const ano = dataSelecionada.getFullYear();
         const mes = dataSelecionada.getMonth() + 1;
 
-        // Obtendo a hora exata no fuso horário de Brasília
         const dataCadastro = new Intl.DateTimeFormat('pt-BR', {
             timeZone: 'America/Sao_Paulo',
             year: 'numeric',
@@ -264,16 +163,12 @@ const DataHora: React.FC = () => {
         const agendamento = {
             ...agendamentoData,
             data: dataFormatada,
-            mes: mes,
-            ano: ano,
+            mes,
+            ano,
             horario: horarioSelecionado,
-            especialidadeId: agendamentoData.categoria?.id, // Categoria (Especialidade)
-            especialidadeNome: agendamentoData.categoria?.nome, // Nome da Categoria
-            subespecialidadeId: agendamentoData.subcategoria?.id, // Subcategoria (Subespecialidade)
-            subespecialidadeNome: agendamentoData.subcategoria?.nome, // Nome da Subcategoria
             convenioId: agendamentoData.convenio.id,
             medicoId: agendamentoData.medico?.id,
-            dataCadastro, // Incluindo o campo dataCadastro
+            dataCadastro,
         };
 
         try {
@@ -289,11 +184,8 @@ const DataHora: React.FC = () => {
         }
     };
 
-
-    const horariosRotativa = verificarDisponibilidadeRotativa(dataSelecionada);
-    const horariosFixa = obterHorariosFixa(dataSelecionada);
-
-    const nenhumHorarioDisponivel = horariosRotativa.length === 0 && horariosFixa.length === 0;
+    const horariosDisponiveis = verificarHorariosDisponiveis(dataSelecionada);
+    const nenhumHorarioDisponivel = horariosDisponiveis.length === 0;
 
     return (
         <div className={styles.contentWrapper}>
@@ -307,63 +199,27 @@ const DataHora: React.FC = () => {
                         selecionarData(date);
                     }}
                     value={dataSelecionada}
-                    tileDisabled={({ date }) => isDiaIndisponivel(date)}
-                    tileClassName={({ date }) => {
-                        const dataFormatada = formatarData(date);
-                        // Para a agenda rotativa, marcamos os dias específicos
-                        if (disponibilidadeRotativa && disponibilidadeRotativa.diasCalendario.includes(dataFormatada)) {
-                            return styles.tileAvailable;
-                        }
-
-                        // Para a agenda fixa, marcamos os dias da semana
-                        if (disponibilidadeFixa) {
-                            const diaSemana = getDiaSemana(date);
-                            if (disponibilidadeFixa.diasDaSemanaComHorarios[diaSemana]) {
-                                return styles.tileAvailable;
-                            }
-                        }
-
-                        return ''; // Dia não disponível
-                    }}
+                    tileDisabled={({ date }) => verificarHorariosDisponiveis(date).length === 0}
+                    tileClassName={({ date }) =>
+                        verificarHorariosDisponiveis(date).length > 0 ? styles.tileAvailable : ''
+                    }
                 />
             </div>
 
             <h3>Horários Disponíveis para {formatarData(dataSelecionada).split('-').reverse().join('/')}</h3>
             <div className={styles.buttonsWrapper}>
-                {/* Exibir horários para agenda rotativa */}
-                {horariosRotativa.length > 0 ? (
-                    horariosRotativa.map((horario, index) => (
-                        <button
-                            key={index}
-                            className={styles.button}
-                            onClick={() => selecionarHorario(horario)}
-                            style={{
-                                backgroundColor: horarioSelecionado === horario ? '#4CAF50' : '#999',
-                            }}
-                        >
-                            {horario}
-                        </button>
-                    ))
-                ) : null}
-
-                {/* Exibir horários para agenda fixa */}
-                {horariosFixa.length > 0 ? (
-                    horariosFixa.map((horario, index) => (
-                        <button
-                            key={index}
-                            className={styles.button}
-                            onClick={() => selecionarHorario(horario)}
-                            style={{
-                                backgroundColor: horarioSelecionado === horario ? '#4CAF50' : '#999',
-                            }}
-                        >
-                            {horario}
-                        </button>
-                    ))
-                ) : null}
-
-                {/* Exibir mensagem de "Nenhum horário disponível" apenas uma vez */}
-                {nenhumHorarioDisponivel && <p>Nenhum horário disponível para este dia.</p>}
+                {horariosDisponiveis.map((horario, index) => (
+                    <button
+                        key={index}
+                        className={styles.button}
+                        onClick={() => selecionarHorario(horario)}
+                        style={{
+                            backgroundColor: horarioSelecionado === horario ? '#4CAF50' : '#999',
+                        }}
+                    >
+                        {horario}
+                    </button>
+                ))}
             </div>
 
             <button
