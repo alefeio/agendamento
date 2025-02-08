@@ -124,6 +124,9 @@ const DataHora: React.FC = () => {
         const dataFormatada = formatarData(data);
         const diaSemana = getDiaSemana(data);
 
+        // Bloqueia feriados
+        if (feriados.includes(dataFormatada)) return [];
+
         const horariosRotativa = disponibilidadeRotativa?.horariosPorData[dataFormatada] || [];
         const horariosFixa = disponibilidadeFixa?.diasDaSemanaComHorarios[diaSemana] || [];
 
@@ -209,24 +212,13 @@ const DataHora: React.FC = () => {
             <h3>Horários Disponíveis para {formatarData(dataSelecionada).split('-').reverse().join('/')}</h3>
             <div className={styles.buttonsWrapper}>
                 {horariosDisponiveis.map((horario, index) => (
-                    <button
-                        key={index}
-                        className={styles.button}
-                        onClick={() => selecionarHorario(horario)}
-                        style={{
-                            backgroundColor: horarioSelecionado === horario ? '#4CAF50' : '#999',
-                        }}
-                    >
+                    <button key={index} className={styles.button} onClick={() => selecionarHorario(horario)}>
                         {horario}
                     </button>
                 ))}
             </div>
 
-            <button
-                className={styles.saveButton}
-                onClick={salvarAgendamento}
-                disabled={isSaving || !horarioSelecionado}
-            >
+            <button className={styles.saveButton} onClick={salvarAgendamento} disabled={isSaving || !horarioSelecionado}>
                 {isSaving ? 'Salvando...' : 'Confirmar Agendamento'}
             </button>
         </div>
