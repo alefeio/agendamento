@@ -6,21 +6,13 @@ const api = axios.create({
 
 api.interceptors.request.use(async (config) => {
     if (!config.headers.Authorization) {
-        try {
-            const response = await axios.get('/api/versatilisToken', {
-                headers: { 'Content-Type': 'text/plain' },
-                params: {
-                    username: '1cce8244-ee5e-477c-a0fb-64186980ef6d',
-                    password: 'api@versatilis',
-                    grant_type: 'password',
-                },
-            });
+        const response = await axios.get('http://177.159.112.242:9091/versatilis/Token', {
+            headers: { 'Content-Type': 'text/plain' },
+            data: 'username=1cce8244-ee5e-477c-a0fb-64186980ef6d&password=api@versatilis&grant_type=password',
+        });
 
-            const token = response.data.access_token;
-            config.headers.Authorization = `Bearer ${token}`;
-        } catch (error) {
-            console.error('Erro ao obter token:', error);
-        }
+        const token = response.data.access_token;
+        config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
 });
