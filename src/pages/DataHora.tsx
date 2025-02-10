@@ -39,7 +39,7 @@ const DataHora: React.FC = () => {
     const [horarioSelecionado, setHorarioSelecionado] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
-    const { agendamentoData, setAgendamentoData } = useAgendamento();
+    const { agendamentoData } = useAgendamento();
     const navigate = useNavigate();
 
     const feriados = ['2025-01-01', '2025-02-20', '2025-04-21', '2025-05-01'];
