@@ -97,52 +97,39 @@ const DataHora: React.FC = () => {
         carregarHorariosIndisponiveis();
     }, [agendamentoData.medico?.id]);
 
-    const formatarData = (data: Date) => data.toISOString().split('T')[0];
+    const verificarHorariosDisponiveis = (data: Date) => {
+        const dataFormatada = data.toISOString().split('T')[0];
+        const diaSemana = getDiaSemana(data);
 
-    const selecionarData = (data: Date) => {
-        setDataSelecionada(data);
-        setAgendamentoData((prev) => ({
-            ...prev,
-            dataHora: formatarData(data),
-        }));
-    };
+        if (feriados.includes(dataFormatada)) return [];
 
-    const selecionarHorario = (horario: string) => {
-        setHorarioSelecionado(horario);
-        setAgendamentoData((prev) => ({
-            ...prev,
-            dataHora: horario,
-        }));
+        const horariosRotativa = disponibilidadeRotativa?.horariosPorData[dataFormatada] || [];
+        const horariosFixa = disponibilidadeFixa?.diasDaSemanaComHorarios[diaSemana] || [];
+
+        const agora = new Date();
+        const horariosDisponiveis = [...horariosRotativa, ...horariosFixa].filter(({ horario, limite }) => {
+            const agendamentosParaHorario = horariosIndisponiveis.filter(
+                (h) => h.dia === dataFormatada && h.horario === horario
+            ).length;
+
+            const [hora, minuto] = horario.split(':').map(Number);
+            const horarioDate = new Date(data);
+            horarioDate.setHours(hora, minuto, 0, 0);
+
+            if (dataFormatada === agora.toISOString().split('T')[0] && horarioDate <= agora) {
+                return false;
+            }
+
+            return agendamentosParaHorario < limite;
+        });
+
+        return horariosDisponiveis.map(h => h.horario);
     };
 
     const getDiaSemana = (date: Date) => {
         const diasDaSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
         return diasDaSemana[date.getDay()];
     };
-
-    const verificarHorariosDisponiveis = (data: Date) => {
-        const dataFormatada = formatarData(data);
-        const diaSemana = getDiaSemana(data);
-
-        // Bloqueia feriados
-        if (feriados.includes(dataFormatada)) return [];
-
-        const horariosRotativa = disponibilidadeRotativa?.horariosPorData[dataFormatada] || [];
-        const horariosFixa = disponibilidadeFixa?.diasDaSemanaComHorarios[diaSemana] || [];
-
-        const horariosDisponiveis = [...horariosRotativa, ...horariosFixa].filter(({ horario, limite }) => {
-            const agendamentosParaHorario = horariosIndisponiveis.filter(
-                (h) => h.dia === dataFormatada && h.horario === horario
-            ).length;
-
-            return agendamentosParaHorario < limite; // Só exibe se não atingiu o limite
-        });
-
-        return horariosDisponiveis.map(h => h.horario);
-    };
-
-    const horariosDisponiveis = verificarHorariosDisponiveis(dataSelecionada);
-    const nenhumHorarioDisponivel = horariosDisponiveis.length === 0;
 
     const salvarAgendamento = async () => {
         if (!horarioSelecionado) {
@@ -152,7 +139,7 @@ const DataHora: React.FC = () => {
 
         setIsSaving(true);
 
-        const dataFormatada = formatarData(dataSelecionada);
+        const dataFormatada = dataSelecionada.toISOString().split('T')[0];
         const ano = dataSelecionada.getFullYear();
         const mes = dataSelecionada.getMonth() + 1;
 
@@ -190,6 +177,9 @@ const DataHora: React.FC = () => {
         }
     };
 
+    const horariosDisponiveis = verificarHorariosDisponiveis(dataSelecionada);
+    const nenhumHorarioDisponivel = horariosDisponiveis.length === 0;
+
     return (
         <div className={styles.contentWrapper}>
             <h1 className={styles.title}>Data e Hora</h1>
@@ -197,10 +187,7 @@ const DataHora: React.FC = () => {
 
             <div className={styles.calendarWrapper}>
                 <Calendar
-                    onClickDay={(date: Date) => {
-                        setDataSelecionada(date);
-                        selecionarData(date);
-                    }}
+                    onClickDay={setDataSelecionada}
                     value={dataSelecionada}
                     tileDisabled={({ date }) => verificarHorariosDisponiveis(date).length === 0}
                     tileClassName={({ date }) =>
@@ -209,17 +196,26 @@ const DataHora: React.FC = () => {
                 />
             </div>
 
-            <h3>Horários Disponíveis para {formatarData(dataSelecionada).split('-').reverse().join('/')}</h3>
+            <h3>Horários Disponíveis para {dataSelecionada.toLocaleDateString()}</h3>
             <div className={styles.buttonsWrapper}>
                 {horariosDisponiveis.map((horario, index) => (
-                    <button key={index} className={styles.button} onClick={() => selecionarHorario(horario)}>
+                    <button
+                        key={index}
+                        className={styles.button}
+                        onClick={() => setHorarioSelecionado(horario)}
+                        style={{ backgroundColor: horarioSelecionado === horario ? '#4CAF50' : '#999' }}
+                    >
                         {horario}
                     </button>
                 ))}
-                {nenhumHorarioDisponivel && <p>Nenhum horário disponível para este dia.</p>}
+                {nenhumHorarioDisponivel && <p className={styles.noHorarios}>Nenhum horário disponível para este dia.</p>}
             </div>
 
-            <button className={styles.saveButton} onClick={salvarAgendamento} disabled={isSaving || !horarioSelecionado}>
+            <button
+                className={styles.saveButton}
+                onClick={salvarAgendamento}
+                disabled={isSaving || !horarioSelecionado}
+            >
                 {isSaving ? 'Salvando...' : 'Confirmar Agendamento'}
             </button>
         </div>
