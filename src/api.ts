@@ -1,5 +1,3 @@
-const BASE_URL = "http://177.159.112.242:9091/versatilis";
-
 let authToken: string | null = null;
 
 /**
