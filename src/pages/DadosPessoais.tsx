@@ -21,11 +21,7 @@ const DadosPessoais: React.FC = () => {
 
     const teste = async () => {
         try {
-            const response = await fetchWithAuth('http://polls.apiblueprint.org/api/Especialidade', {
-                headers: {
-                    'Cache-Control': 'no-cache'
-                }
-            });
+            const response = await fetchWithAuth('http://polls.apiblueprint.org/api/Especialidade');
 
             console.log('response', response)
 
