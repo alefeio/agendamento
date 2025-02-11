@@ -58,6 +58,8 @@ export const fetchWithAuth = async (url: string, options: RequestInit = {}): Pro
             return fetchWithAuth(url, options);
         }
 
+        console.log('response', response)
+
         return response;
     } catch (error) {
         console.error('Erro ao fazer requisição autenticada:', error);
