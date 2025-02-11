@@ -5,7 +5,7 @@ const fetchToken = async (): Promise<string> => {
     const password = encodeURIComponent('api@versatilis');
     const grantType = encodeURIComponent('password');
 
-    const url = `http://177.159.112.242:9091/versatilis/Token?username=${username}&password=${password}&grant_type=${grantType}`;
+    const url = `/api/versatilisToken?username=${username}&password=${password}&grant_type=${grantType}`;
 
     try {
         const response = await fetch(url, {
