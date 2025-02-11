@@ -11,5 +11,6 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api\/versatilisToken/, '/versatilis/Token'),
       },
     },
+    https: false,
   },
 });

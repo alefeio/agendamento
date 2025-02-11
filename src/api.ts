@@ -9,7 +9,7 @@ const fetchToken = async (): Promise<string | null> => {
     try {
         console.log("🔄 Obtendo novo token...");
 
-        const response = await fetch(`${BASE_URL}/Token`, {
+        const response = await fetch('https://cors-anywhere.herokuapp.com/http://177.159.112.242:9091/versatilis/Token', {
             method: "POST", // Corrigido para POST, pois GET com body não é permitido
             headers: {
                 "Content-Type": "text/plain",
