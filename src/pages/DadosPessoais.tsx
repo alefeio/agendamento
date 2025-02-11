@@ -21,15 +21,17 @@ const DadosPessoais: React.FC = () => {
 
     const teste = async () => {
         try {
-            const response = await fetchWithAuth('http://polls.apiblueprint.org/api/Especialidade');
-
-            console.log('response', response)
-
+            const response = await fetchWithAuth("http://polls.apiblueprint.org/api/Especialidade");
+    
+            if (!response.ok) {
+                throw new Error(`Erro na requisição: ${response.status}`);
+            }
+    
             const data = await response.json();
-            console.log('Dados obtidos:', data);
+            console.log("📄 Dados obtidos:", data);
             return data;
         } catch (error) {
-            console.error('Erro ao obter dados:', error);
+            console.error("❌ Erro ao obter dados:", error);
         }
     };
 
