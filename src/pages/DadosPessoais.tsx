@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAgendamento } from '../context/AgendamentoContext';
 import styles from './DadosPessoais.module.css';
-import api from '../api';
+import api, { fetchWithAuth } from '../api';
 
 const DadosPessoais: React.FC = () => {
     const { agendamentoData, setAgendamentoData } = useAgendamento();
@@ -20,13 +20,13 @@ const DadosPessoais: React.FC = () => {
     };
 
     const teste = async () => {
-
         try {
-            const res = await api.get('api/Especialidade/');
-
-            console.log('res', res);
-        } catch (err: any) {
-            console.error(err.response?.data || "Erro");
+            const response = await fetchWithAuth('http://polls.apiblueprint.org/api/Especialidade');
+            const data = await response.json();
+            console.log('Dados obtidos:', data);
+            return data;
+        } catch (error) {
+            console.error('Erro ao obter dados:', error);
         }
     };
 
