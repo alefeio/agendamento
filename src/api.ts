@@ -2,7 +2,7 @@ let authToken: string | null = null;
 
 const fetchToken = async () => {
     try {
-        const response = await fetch('http://177.159.112.242:9091/versatilis/Token', {
+        const response = await fetch('/api/versatilisToken', {
             method: 'GET',
             headers: {
                 'Content-Type': 'text/plain',
