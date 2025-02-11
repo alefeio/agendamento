@@ -1,37 +1,24 @@
 let authToken: string | null = null;
 
-const fetchToken = async (): Promise<string> => {
-    const username = encodeURIComponent('1cce8244-ee5e-477c-a0fb-64186980ef6d');
-    const password = encodeURIComponent('api@versatilis');
-    const grantType = encodeURIComponent('password');
-
-    const url = `/api/versatilisToken?username=${username}&password=${password}&grant_type=${grantType}`;
-
+const fetchToken = async () => {
     try {
-        const response = await fetch(url, {
+        const response = await fetch('http://177.159.112.242:9091/versatilis/Token', {
             method: 'GET',
             headers: {
                 'Content-Type': 'text/plain',
             },
+            body: 'username=1cce8244-ee5e-477c-a0fb-64186980ef6d&password=api@versatilis&grant_type=password'
         });
 
         if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+            throw new Error(`Erro na requisição: ${response.status}`);
         }
 
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            const text = await response.text();
-            console.error('Resposta inesperada:', text);
-            throw new Error('A resposta do servidor não é um JSON válido.');
-        }
-
-        const data: { access_token: string } = await response.json();
-        authToken = data.access_token;
-        return authToken;
+        const data = await response.json();
+        console.log('Token obtido:', data.access_token);
+        return data.access_token;
     } catch (error) {
-        console.error('Erro ao obter o token:', error);
-        throw error;
+        console.error('Erro ao obter token:', error);
     }
 };
 
