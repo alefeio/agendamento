@@ -1,7 +1,8 @@
 // src/pages/DadosPessoais.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAgendamento } from '../context/AgendamentoContext';
 import styles from './DadosPessoais.module.css';
+import { fetchToken } from '../api';
 
 const DadosPessoais: React.FC = () => {
     const { agendamentoData, setAgendamentoData } = useAgendamento();
@@ -45,9 +46,10 @@ const DadosPessoais: React.FC = () => {
         }
     };
 
-    // useEffect(() => {
-    //     teste();
-    // }, [])
+    useEffect(() => {
+        // teste();
+        fetchToken();
+    }, [])
 
     return (
         <div className={styles.contentWrapper}>

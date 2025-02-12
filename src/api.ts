@@ -1,6 +1,6 @@
 let authToken: string | null = null;
 
-const fetchToken = async (): Promise<string | null> => {
+export const fetchToken = async (): Promise<string | null> => {
     try {
         const url = 'http://177.159.112.242:9091/versatilis/Token';
 
