@@ -19,21 +19,21 @@ const DadosPessoais: React.FC = () => {
         }));
     };
 
-    const teste = async () => {
-        try {
-            const response = await fetchWithAuth("http://polls.apiblueprint.org/api/Especialidade");
+    // const teste = async () => {
+    //     try {
+    //         const response = await fetchWithAuth("http://polls.apiblueprint.org/api/Especialidade");
     
-            if (!response.ok) {
-                throw new Error(`Erro na requisição: ${response.status}`);
-            }
+    //         if (!response.ok) {
+    //             throw new Error(`Erro na requisição: ${response.status}`);
+    //         }
     
-            const data = await response.json();
-            console.log("📄 Dados obtidos:", data);
-            return data;
-        } catch (error) {
-            console.error("❌ Erro ao obter dados:", error);
-        }
-    };
+    //         const data = await response.json();
+    //         console.log("📄 Dados obtidos:", data);
+    //         return data;
+    //     } catch (error) {
+    //         console.error("❌ Erro ao obter dados:", error);
+    //     }
+    // };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -46,9 +46,9 @@ const DadosPessoais: React.FC = () => {
         }
     };
 
-    useEffect(() => {
-        teste();
-    }, [])
+    // useEffect(() => {
+    //     teste();
+    // }, [])
 
     return (
         <div className={styles.contentWrapper}>
