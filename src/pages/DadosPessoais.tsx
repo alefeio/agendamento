@@ -1,8 +1,7 @@
 // src/pages/DadosPessoais.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useAgendamento } from '../context/AgendamentoContext';
 import styles from './DadosPessoais.module.css';
-import { fetchWithAuth } from '../api';
 
 const DadosPessoais: React.FC = () => {
     const { agendamentoData, setAgendamentoData } = useAgendamento();
