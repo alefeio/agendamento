@@ -2,15 +2,19 @@ let authToken: string | null = null;
 
 export const fetchToken = async (): Promise<string | null> => {
     try {
-        const url = 'http://177.159.112.242:9091/versatilis/Token';
+        const url = '/versatilis/Token';
 
         const response = await fetch(url, {
-            method: 'POST', // O Postman está enviando como POST
+            method: 'POST', // Agora estamos enviando como POST
             headers: {
-                'Content-Type': 'text/plain',
-                'Accept': 'application/text', // Garantir que o Accept esteja igual ao Postman
+                'Content-Type': 'application/x-www-form-urlencoded', // Seguindo a documentação
+                'Accept': 'application/text', // Garantindo que o Accept esteja correto
             },
-            body: 'username=1cce8244-ee5e-477c-a0fb-64186980ef6d&password=api@versatilis&grant_type=password'
+            body: new URLSearchParams({
+                username: '1cce8244-ee5e-477c-a0fb-64186980ef6d',
+                password: 'api@versatilis',
+                grant_type: 'password',
+            }).toString(), // Enviar o body corretamente formatado
         });
 
         if (!response.ok) {

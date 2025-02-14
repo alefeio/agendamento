@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAgendamento } from '../context/AgendamentoContext';
 import styles from './DadosPessoais.module.css';
-import { fetchToken } from '../api';
+import { fetchWithAuth } from '../api';
 
 const DadosPessoais: React.FC = () => {
     const { agendamentoData, setAgendamentoData } = useAgendamento();
@@ -19,21 +19,30 @@ const DadosPessoais: React.FC = () => {
         }));
     };
 
-    // const teste = async () => {
-    //     try {
-    //         const response = await fetchWithAuth("http://polls.apiblueprint.org/api/Especialidade");
+    const teste = async () => {
+        try {
+            const url = "/api/Especialidade";
     
-    //         if (!response.ok) {
-    //             throw new Error(`Erro na requisição: ${response.status}`);
-    //         }
+            console.log("📡 Iniciando requisição para Especialidade...");
     
-    //         const data = await response.json();
-    //         console.log("📄 Dados obtidos:", data);
-    //         return data;
-    //     } catch (error) {
-    //         console.error("❌ Erro ao obter dados:", error);
-    //     }
-    // };
+            const response = await fetchWithAuth(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Erro na requisição: ${response.status} - ${response.statusText}`);
+            }
+    
+            const data = await response.json();
+            console.log("📄 Dados obtidos:", data);
+            return data;
+        } catch (error) {
+            console.error("❌ Erro ao obter dados:", error);
+        }
+    };    
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -47,8 +56,7 @@ const DadosPessoais: React.FC = () => {
     };
 
     useEffect(() => {
-        // teste();
-        fetchToken();
+        teste();
     }, [])
 
     return (
