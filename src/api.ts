@@ -1,10 +1,15 @@
 let authToken: string | null = null;
 
+const BASE_URL =
+  import.meta.env.MODE === "development"
+    ? "/versatilis/Token"
+    : "http://177.159.112.242:9091/versatilis/Token";
+
 export const fetchToken = async (): Promise<string | null> => {
     try {
         const url = '/versatilis/Token';
 
-        const response = await fetch(url, {
+        const response = await fetch(BASE_URL, {
             method: 'POST', // Agora estamos enviando como POST
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded', // Seguindo a documentação
