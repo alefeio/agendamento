@@ -7,8 +7,6 @@ const BASE_URL =
 
 export const fetchToken = async (): Promise<string | null> => {
     try {
-        const url = '/versatilis/Token';
-
         const response = await fetch(BASE_URL, {
             method: 'POST', // Agora estamos enviando como POST
             headers: {
