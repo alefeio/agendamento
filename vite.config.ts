@@ -7,8 +7,8 @@ export default defineConfig({
   server: {
     port: 8080,
     proxy: {
-      '/versatilis/Token': 'http://177.159.112.242:9091',
-      '/api/Especialidade': 'http://polls.apiblueprint.org',
+      '/Versatilis/Token': 'http://177.159.112.242:9091',
+      '/Versatilis/api/Especialidade?nomeEspecialidade=ANESTESIOLOGIA': 'http://177.159.112.242:9091',
     }
   }
 })

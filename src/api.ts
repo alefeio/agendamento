@@ -2,8 +2,8 @@ let authToken: string | null = null;
 
 const BASE_URL =
   import.meta.env.MODE === "development"
-    ? "/versatilis/Token"
-    : "http://177.159.112.242:9091/versatilis/Token";
+    ? "/Versatilis/Token"
+    : "http://177.159.112.242:9091/Versatilis/Token";
 
 export const fetchToken = async (): Promise<string | null> => {
     try {

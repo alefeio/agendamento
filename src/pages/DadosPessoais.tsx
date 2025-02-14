@@ -21,7 +21,10 @@ const DadosPessoais: React.FC = () => {
 
     const teste = async () => {
         try {
-            const url = "/api/Especialidade";
+            const url = 
+            import.meta.env.MODE === "development"
+    ? "/Versatilis/api/Especialidade?nomeEspecialidade=ANESTESIOLOGIA"
+    : "http://177.159.112.242:9091/Versatilis/api/Especialidade?nomeEspecialidade=ANESTESIOLOGIA";
     
             console.log("📡 Iniciando requisição para Especialidade...");
     
