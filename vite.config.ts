@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: 8080,
     proxy: {
       '/versatilis/Token': 'http://177.159.112.242:9091',
       '/api/Especialidade': 'http://polls.apiblueprint.org',
